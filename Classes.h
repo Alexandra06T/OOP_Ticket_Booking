@@ -46,7 +46,7 @@ String::String(const char *sir) {
     pointer[lungime] = '\0';
 }
 String::~String() {
-    delete[] pointer;
+//    delete[] pointer;
     lungime = 0;
 }
 String::String(String &sir) {
@@ -395,6 +395,8 @@ class Sala {
 public:
     //constructor parametrizat Sala
     Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3);
+    //copy constructor
+    Sala(Sala &s);
     //afiseaza informatii despre nume_sala si adresa
     void display();
     //getter nr_locuri_C1
@@ -419,6 +421,15 @@ public:
 };
 //constructor parametrizat Sala
 Sala::Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3): nume_sala(nume), adresa(adr), nr_locuri_C1(nr_C1), nr_locuri_C2(nr_C2), nr_locuri_C3(nr_C3)  {}
+
+//copy constructor
+Sala::Sala(Sala &s) {
+    nume_sala = s.nume_sala;
+    adresa = s.adresa;
+    nr_locuri_C1 = s.nr_locuri_C1;
+    nr_locuri_C2 = s.nr_locuri_C2;
+    nr_locuri_C3 = s.nr_locuri_C3;
+}
 
 //afiseaza informatii despre nume_sala si adresa
 void Sala::display() {
@@ -569,65 +580,106 @@ class Reprezentatie {
     Categorie C1;
     Categorie C2;
     Categorie C3;
-    class ReprList {
-        class Node {
-            Reprezentatie* repr;
-            Node* next;
-        public:
-            //constructor parametrizat
-            Node(Reprezentatie* r,Node *ptr){
-                repr = r;
-                next = ptr;
-            };
-            void set_repr(Reprezentatie* r) {
-                repr = r;
-            };
-            void set_ptr(Node* ptr) {
-                next = ptr;
-            };
-            Reprezentatie* get_repr() {
-                return repr;
-            }
-            Node* get_ptr() {
-                return next;
-            }
-            ~Node() {
-                if (next != nullptr) {
-                    delete next;
-                }
-            }
-        };
-        Node *first;
-    public:
-        //crearea unei liste vide
-        ReprList();
-        //inserare inaintea unui nod
-        void insert_before(Reprezentatie *r, Node* pre, Node* post);
-        //adaugarea unei reprezentatii in lista
-        void add_repr(Reprezentatie *r);
-        //afisarea listei sub forma de calendar
-        void display_list();
-        //destructor
-        ~ReprList();
-    };
-    static ReprList lista_repr;
 public:
     //crearea unei reprezentatii vide
     Reprezentatie();
     //constructor parametrizat
-    Reprezentatie();
+    Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, int l1, float p2, int l2, float p3, int l3);
+    //copy constructor
+    Reprezentatie(Reprezentatie &r);
     //afisarea detaliilor unei reprezentatii
     void display_info_repr();
+    //getter data
+    Data get_data();
     //rezerva loc
+
     //destructor
 
 };
+//copy constructor
+Reprezentatie::Reprezentatie(Reprezentatie &r) {
+    piesa = r.piesa;
+    data_repr = r.get_data();
+    s = r.s;
+    C1 = r.C1;
+    C2 = r.C2;
+    C3 = r.C3;
+}
+
+Data Reprezentatie::get_data() {
+    return data_repr;
+}
+class ReprList {
+    class Node {
+        Reprezentatie* repr;
+        Node* next;
+    public:
+        //constructor parametrizat
+        Node(Reprezentatie* r,Node *ptr){
+            repr = r;
+            next = ptr;
+        };
+        void set_repr(Reprezentatie* r) {
+            repr = r; //sau alocare dinamica de memorie pt repr inainte?
+        };
+        void set_ptr(Node* ptr) {
+            next = ptr;
+        };
+        Reprezentatie* get_repr() {
+            return repr;
+        }
+        Node* get_ptr() {
+            return next;
+        }
+        Node(Node &nod) {
+            repr = new Reprezentatie;
+            *repr = *nod.get_repr();
+            next = new Node(nullptr, nullptr);
+            next = nod.get_ptr();
+        }
+        ~Node() {
+            if (next != nullptr) {
+                delete next;
+            }
+        }
+    };
+    Node *first;
+public:
+    //crearea unei liste vide
+    ReprList();
+    //copy constructor
+    ReprList(ReprList &rl);
+    //inserare inaintea unui nod
+    void insert_before(Reprezentatie *r, Node* pre, Node* post);
+    //adaugarea unei reprezentatii in lista
+    void add_repr(Reprezentatie *r);
+    //afisarea listei sub forma de calendar
+    void display_list();
+    //destructor
+    ~ReprList();
+};
+
+//
+
 //crearea unei liste vide
-Reprezentatie::ReprList::ReprList() {
+ReprList::ReprList() {
     first = nullptr;
 }
+//copy constructor
+ReprList::ReprList(ReprList &rl) {
+    first = new Node(rl.first->get_repr(), nullptr);
+    Node* last = first;
+    Node* nod = rl.first->get_ptr(), *newnode;
+    while (nod != nullptr) {
+        newnode = new Node(nod->get_repr(), nullptr);
+        last->set_ptr(newnode);
+        last = newnode;
+        nod = nod->get_ptr();
+    }
+}
+
 //inserare inaintea unui nod
-void Reprezentatie::ReprList::insert_before(Reprezentatie *r, Node* pre, Node* post) {
+void ReprList::insert_before(Reprezentatie *r, Node* pre, Node* post) {
     //daca post este primul nod, inseram inainte, modificand first
     if(post == first) {
         Node *newnode = new Node(r, first);
@@ -639,55 +691,59 @@ void Reprezentatie::ReprList::insert_before(Reprezentatie *r, Node* pre, Node* p
     }
 }
 //adaugarea unei reprezentatii in lista
-void Reprezentatie::ReprList::add_repr(Reprezentatie *r) {
+void ReprList::add_repr(Reprezentatie *r) {
     Node* pre = first, *post = pre;
     int check = 0; // check devine 1 cand inseram o noua reprezentatie
+    //daca lista nu are niciun nod
+    if(first == nullptr) {
+        first = new Node(r, nullptr);
+    }
     //daca lista are un singur nod
-    if (first->get_ptr() == nullptr) {
-        if (r->data_repr.get_an() == first->get_repr()->data_repr.get_an()) {
+    else if (first->get_ptr() == nullptr) {
+        if (r->get_data().get_an() == first->get_repr()->get_data().get_an()) {
             //daca anii sunt egali, verificam lunile
-            if (r->data_repr.get_luna() == first->get_repr()->data_repr.get_luna()) {
+            if (r->get_data().get_luna() == first->get_repr()->get_data().get_luna()) {
                 //daca lunile sunt egale verificam zilele
-                if (r->data_repr.get_zi() == first->get_repr()->data_repr.get_zi()) {
+                if (r->get_data().get_zi() == first->get_repr()->get_data().get_zi()) {
                     //daca zilele sunt egale verificam orele
-                    if (r->data_repr.get_ora() < first->get_repr()->data_repr.get_ora()) {
+                    if (r->get_data().get_ora() < first->get_repr()->get_data().get_ora()) {
                         insert_before(r, pre, post);
                     } else {
                         insert_before(r, pre, post);
                     }
-                } else if (r->data_repr.get_zi() < first->get_repr()->data_repr.get_zi()) {
+                } else if (r->get_data().get_zi() < first->get_repr()->get_data().get_zi()) {
                     insert_before(r, pre, post);
                 }
-            } else if (r->data_repr.get_luna() < first->get_repr()->data_repr.get_luna()) {
+            } else if (r->get_data().get_luna() < first->get_repr()->get_data().get_luna()) {
                 insert_before(r, pre, post);
             }
-        } else if(r->data_repr.get_an() < first->get_repr()->data_repr.get_an()) {
+        } else if(r->get_data().get_an() < first->get_repr()->get_data().get_an()) {
             insert_before(r, pre, post);
         }
     }else { //pentru doua sau mai multe noduri
         while(post != nullptr && check == 0) {
-            if (r->data_repr.get_an() == first->get_repr()->data_repr.get_an()) {
+            if (r->get_data().get_an() == first->get_repr()->get_data().get_an()) {
                 //daca anii sunt egali, verificam lunile
-                if (r->data_repr.get_luna() == first->get_repr()->data_repr.get_luna()) {
+                if (r->get_data().get_luna() == first->get_repr()->get_data().get_luna()) {
                     //daca lunile sunt egale verificam zilele
-                    if (r->data_repr.get_zi() == first->get_repr()->data_repr.get_zi()) {
+                    if (r->get_data().get_zi() == first->get_repr()->get_data().get_zi()) {
                         //daca zilele sunt egale verificam orele
-                        if (r->data_repr.get_ora() < first->get_repr()->data_repr.get_ora()) {
+                        if (r->get_data().get_ora() < first->get_repr()->get_data().get_ora()) {
                             insert_before(r, pre, post);
                             check = 1;
                         } else {
                             insert_before(r, pre, post);
                             check = 1;
                         }
-                    } else if (r->data_repr.get_zi() < first->get_repr()->data_repr.get_zi()) {
+                    } else if (r->get_data().get_zi() < first->get_repr()->get_data().get_zi()) {
                         insert_before(r, pre, post);
                         check = 1;
                     }
-                } else if (r->data_repr.get_luna() < first->get_repr()->data_repr.get_luna()) {
+                } else if (r->get_data().get_luna() < first->get_repr()->get_data().get_luna()) {
                         insert_before(r, pre, post);
                         check = 1;
                 }
-            } else if(r->data_repr.get_an() < first->get_repr()->data_repr.get_an()) {
+            } else if(r->get_data().get_an() < first->get_repr()->get_data().get_an()) {
                 insert_before(r, pre, post);
                 check = 1;
             }
@@ -697,14 +753,14 @@ void Reprezentatie::ReprList::add_repr(Reprezentatie *r) {
     }
 }
 //afisarea listei sub forma de calendar
-void Reprezentatie::ReprList::display_list() {
+void ReprList::display_list() {
     Node* nod = first;
     int indice = 1;
     while (nod != nullptr) {
         nod->get_repr()->display_info_repr();
         cout << "_____________" << indice << endl;
-        if(nod->get_repr()->data_repr != nod->get_ptr()->get_repr()->data_repr)
-            nod->get_ptr()->get_repr()->data_repr.data_display();
+        if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data())
+            nod->get_ptr()->get_repr()->get_data().data_display();
         cout << endl;
         nod = nod->get_ptr();
         indice ++;
@@ -712,15 +768,20 @@ void Reprezentatie::ReprList::display_list() {
     cout << endl;
 }
 //destructor, se apeleaza recursiv pentru toate nodurile
-Reprezentatie::ReprList::~ReprList() {
+ReprList::~ReprList() {
     delete first;
 }
 //crearea unei reprezentatii vide
 Reprezentatie::Reprezentatie(): piesa(nullptr), data_repr(), s(nullptr), C1(), C2(), C3()  {}
 
+//cnstructor parametrizat
+Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, int l1, float p2, int l2, float p3, int l3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, l1), C2(p2, l2), C3(p3, l3) {
+   // lista_repr.add_repr(this);
+}
+
 //afisarea detaliilor unei reprezentatii
 void Reprezentatie::display_info_repr() {
-    cout << piesa->get_nume() << "    ";
+    cout << piesa->get_nume() << " ";
     data_repr.display_ora_minut();
     cout << s->get_nume_sala() << " ";
 }
