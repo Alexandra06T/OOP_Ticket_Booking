@@ -399,12 +399,8 @@ public:
     Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3);
     //afiseaza informatii despre nume_sala si adresa
     void display();
-    //getter nr_locuri_C1
-    int get_C1() const;
-    //getter nr_locuri_C2
-    int get_C2() const;
-    //getter nr_locuri_C3
-    int get_C3() const;
+    //getter nr_locuri_C
+    int get_C(int cat);
     //setter nume_sala
     void set_nume(const char* nume);
     //setter adresa
@@ -428,16 +424,13 @@ void Sala::display() {
     adresa.display();
 }
 //getter nr_locuri_C1
-int Sala::get_C1() const {
-    return nr_locuri_C1;
-}
-//getter nr_locuri_C2
-int Sala::get_C2()  const {
-    return nr_locuri_C2;
-}
-//getter nr_locuri_C3
-int Sala::get_C3() const {
-    return nr_locuri_C3;
+int Sala::get_C(int cat) {
+    if(cat == 1)
+        return nr_locuri_C1;
+    else if(cat == 2)
+        return nr_locuri_C2;
+    else
+        return nr_locuri_C3;
 }
 //setter nume_sala
 void Sala::set_nume(const char* nume) {
@@ -547,10 +540,14 @@ void Categorie::set_pret(const float pret_nou) {
     pret = pret_nou;
 }
 //setter loc devine rezervat
-void Categorie::set_rezervat(const int i) {
-    lista_locuri.set_i_val(i, 1);
-    nr_locuri_disponibile--;
-    nr_locuri_rezervate++;
+void Categorie::set_rezervat(int i) {
+    if(lista_locuri.access_val(i) == 1)
+        cout << "Locul nu este disponibil.\n";
+    else {
+        lista_locuri.set_i_val(i, 1);
+        nr_locuri_disponibile--;
+        nr_locuri_rezervate++;
+    }
 }
 //setter loc devine disponibil
 void Categorie::set_disponibil(int i) {
@@ -597,6 +594,8 @@ public:
     Piesa_teatru get_piesa();
     //getter sala
     Sala get_sala();
+    //getter cat
+    Categorie get_cat(int i);
     //calculeaza numarul total de locuri disponibile pentru o reprezentatie
     int total_disp();
     //rezerva loc
@@ -627,6 +626,16 @@ Piesa_teatru Reprezentatie::get_piesa() {
 Sala Reprezentatie::get_sala() {
     return *s;
 }
+//getter cat
+Categorie Reprezentatie::get_cat(int i) {
+    if(i == 1)
+        return C1;
+    else if(i == 2)
+        return C2;
+    else
+        return C3;
+}
+
 //calculeaza numarul total de locuri disponibile pentru o reprezentatie
 int Reprezentatie::total_disp() {
     return C1.nr_disp() + C2.nr_disp() + C3.nr_disp();
@@ -710,7 +719,7 @@ public:
     //destructor
     ~ReprList();
     //acceseaza al i lea element
-    Reprezentatie access_i_repr(int i);
+    Reprezentatie* access_i_repr(int i);
 };
 
 //
@@ -837,7 +846,7 @@ void ReprList::display_list() {
         nod->get_repr()->display_info_repr();
         cout << "_____________ " << indice;
         if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data()) {
-            cout << endl;
+            cout << endl << endl;
             nod->get_ptr()->get_repr()->get_data().data_display();
         }
         cout << endl;
@@ -845,23 +854,19 @@ void ReprList::display_list() {
         indice ++;
     }
 }
-Reprezentatie ReprList::access_i_repr(int i) {
+Reprezentatie* ReprList::access_i_repr(int i) {
     //pozitiile in lista incep de la 1
-    int indice = 0, check = 0;// check = 0 - nu s-a gasit pozitia i
+    int indice = 0;
     Reprezentatie repr;
     Node *nod = first;
     while (nod != nullptr && indice < i) {
-        repr = *nod->get_repr();
-        if (indice == i-1)
-            check = 1;
+        if (indice == i-1) {
+            return nod->get_repr();
+        }
         nod = nod->get_ptr();
         indice++;
     }
-    if (check == 0) {
-        cout << "Pozitia cautata nu se afla in lista.\n";
-    }
-    else
-        return repr;
+    cout << "Pozitia cautata nu se afla in lista.\n";
 }
 //destructor, se apeleaza recursiv pentru toate nodurile
 ReprList::~ReprList() {
@@ -871,13 +876,13 @@ ReprList::~ReprList() {
 Reprezentatie::Reprezentatie(): piesa(nullptr), data_repr(), s(nullptr), C1(), C2(), C3()  {}
 
 //constructor parametrizat
-Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, sl->get_C1()), C2(p2, sl->get_C2()), C3(p3, sl->get_C3()) {}
+Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, sl->get_C(1)), C2(p2, sl->get_C(2)), C3(p3, sl->get_C(3)) {}
 
 //afisarea detaliilor unei reprezentatii
 void Reprezentatie::display_info_repr() {
-    cout << piesa->get_nume() << " ";
+    cout << piesa->get_nume() << "   ";
     data_repr.display_ora_minut();
-    cout << s->get_nume_sala() << " " << total_disp() << " ";
+    cout << "  Sala " <<  s->get_nume_sala() << "   Numar locuri disponibile " << total_disp() << " ";
 }
 
 class Rezervare {
@@ -901,9 +906,8 @@ public:
 Rezervare::Rezervare(): categorie(0), loc(0), reprezentatie(nullptr), cod_r(0) {}
 
 //constructor parametrizat
-Rezervare::Rezervare(Reprezentatie* r, int cat, int l, int cod): categorie(cat), loc(l), reprezentatie(r), cod_r(cod) {
-    //reprezentatie.rezerva();
-}
+Rezervare::Rezervare(Reprezentatie* r, int cat, int l, int cod): categorie(cat), loc(l), reprezentatie(r), cod_r(cod) {}
+
 //getter data
 Data Rezervare::get_data() {
     return reprezentatie->get_data();
@@ -911,9 +915,9 @@ Data Rezervare::get_data() {
 //afisare informatii rezervare
 void Rezervare::display_info_rez() {
     reprezentatie->display_info_repr();
-    cout << " Categorie " << categorie << " ";
-    cout << "Loc " << loc << " ";
-    cout << "Pret " << reprezentatie->get_pret(categorie, cod_r);
+    cout << " Categorie " << categorie << "   ";
+    cout << "Loc " << loc << "   ";
+    cout << "Pret " << reprezentatie->get_pret(categorie, cod_r) << " lei";
 }
 //modifica loc rezervare
 void Rezervare::modif_rez(int categ_noua, int loc_nou) {
@@ -961,6 +965,8 @@ public:
     void add_rez(Rezervare *r);
     //afisarea listei sub forma de calendar
     void display_list();
+    //accesarea reprezentatiei de pe pozitia i
+    Rezervare* access_i_rez(int i);
     //destructor
     ~RezList();
 };
@@ -1077,20 +1083,39 @@ void RezList::add_rez(Rezervare *r) {
 }
 //afisarea listei sub forma de calendar
 void RezList::display_list() {
-    Node* nod = first;
-    nod->get_rez()->get_data().data_display();
-    cout << endl;
-    int indice = 1;
-    while (nod != nullptr) {
-        nod->get_rez()->display_info_rez();
-        cout << "_____________ " << indice << endl;
-        if(nod->get_ptr() != nullptr && nod->get_rez()->get_data() != nod->get_ptr()->get_rez()->get_data())
-            nod->get_ptr()->get_rez()->get_data().data_display();
+    if( first != nullptr) {
+        Node* nod = first;
+        nod->get_rez()->get_data().data_display();
         cout << endl;
-        nod = nod->get_ptr();
-        indice ++;
+        int indice = 1;
+        while (nod != nullptr) {
+            nod->get_rez()->display_info_rez();
+            cout << "_____________ " << indice << endl;
+            if(nod->get_ptr() != nullptr && nod->get_rez()->get_data() != nod->get_ptr()->get_rez()->get_data())
+                nod->get_ptr()->get_rez()->get_data().data_display();
+            cout << endl;
+            nod = nod->get_ptr();
+            indice ++;
+        }
+        cout << endl;
     }
-    cout << endl;
+    else
+        cout << "Nu exista rezervari.";
+}
+//accesarea rezervarii de pe pozitia i
+Rezervare* RezList::access_i_rez(int i) {
+    //pozitiile in lista incep de la 1
+    int indice = 0;
+    Rezervare rez;
+    Node *nod = first;
+    while (nod != nullptr && indice < i) {
+        if (indice == i-1) {
+            return nod->get_rez();
+        }
+        nod = nod->get_ptr();
+        indice++;
+    }
+    cout << "Pozitia cautata nu se afla in lista.\n";
 }
 //destructor
 RezList::~RezList() {
