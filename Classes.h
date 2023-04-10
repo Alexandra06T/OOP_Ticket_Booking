@@ -598,7 +598,7 @@ public:
     //rezerva loc
     void rezerva(int cat, int loc);
     //modifica locul rezervat
-    void modif_loc(int cat, int loc_nou);
+    void modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc_nou);
 };
 //getter data
 Data Reprezentatie::get_data() {
@@ -631,8 +631,27 @@ void Reprezentatie::rezerva(int cat, int loc) {
     }
 }
 //modifica locul rezervat
-void Reprezentatie::modif_loc(int cat, int loc_nou) {
-
+void Reprezentatie::modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc_nou) {
+    if(cat_vechi == 1) {
+        C1.set_disponibil(loc_vechi);
+    }
+    else if(cat_vechi == 2) {
+        C2.set_disponibil(loc_vechi);
+    }
+    else {
+        C3.set_disponibil(loc_vechi);
+    }
+    if(cat_nou == 1) {
+        C1.set_rezervat(loc_nou);
+    }
+    else if(cat_nou == 2) {
+        C2.set_disponibil(loc_vechi);
+        C2.set_rezervat(loc_nou);
+    }
+    else {
+        C3.set_disponibil(loc_vechi);
+        C3.set_rezervat(loc_nou);
+    }
 }
 
 class ReprList {
@@ -841,6 +860,8 @@ public:
     Data get_data();
     //afisare informatii rezervare
     void display_info_rez();
+    //modifica loc rezervare
+    void modif_rez(int categ_noua, int loc_nou);
 };
 //constructor neparametrizat
 Rezervare::Rezervare(): categorie(0), loc(0), reprezentatie(nullptr) {}
@@ -859,6 +880,11 @@ void Rezervare::display_info_rez() {
     cout << " Categorie " << categorie << " ";
     cout << "Loc " << loc << " ";
     cout << "Pret " << reprezentatie->get_pret(categorie, cod_r);
+}
+//modifica loc rezervare
+void Rezervare::modif_rez(int categ_noua, int loc_nou) {
+    categorie = categ_noua;
+    loc = loc_nou;
 }
 
 class RezList {

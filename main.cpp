@@ -48,6 +48,7 @@ int main() {
     lista_repr.add_repr(&r3);
     lista_repr.display_list();
     r1.rezerva(1,10);
+    r1.modif_loc(1, 10, 2, 5);
     Rezervare rez(&r1, 1, 10);
     r2.rezerva(2,15);
     Rezervare rez2(&r2, 2, 15);
