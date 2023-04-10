@@ -46,7 +46,7 @@ String::String(const char *sir) {
     pointer[lungime] = '\0';
 }
 String::~String() {
-    //delete[] pointer;
+    delete[] pointer;
     lungime = 0;
 }
 String::String(String &sir) {
@@ -533,6 +533,8 @@ public:
     void set_rezervat(int i);
     //setter loc devine disponibil
     void set_disponibil(int i);
+    //getter nr_locuri disponibile
+    int nr_disp();
     //afiseaza lista locuri disponibile
     void display_disponibil();
     //calculeaza pret, aplicand eventuale reduceri (0% (cod reducere 0), 20% ultima zi (cod reducere 1), 50% student (cod reducere 2), 100% elevi (cod reducere 3)
@@ -560,6 +562,10 @@ void Categorie::set_rezervat(const int i) {
 void Categorie::set_disponibil(int i) {
     lista_locuri.set_i_val(i,0);
 }
+//getter nr_locuri disponibile
+int Categorie::nr_disp() {
+    return nr_locuri_disponibile;
+}
 //afiseaza lista locuri disponibile
 void Categorie::display_disponibil() {
     lista_locuri.filter(0);
@@ -584,13 +590,15 @@ public:
     //crearea unei reprezentatii vide
     Reprezentatie();
     //constructor parametrizat
-    Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, int l1, float p2, int l2, float p3, int l3);
+    Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3);
     //copy constructor
     Reprezentatie(Reprezentatie &r);
     //afisarea detaliilor unei reprezentatii
     void display_info_repr();
     //getter data
     Data get_data();
+    //calculeaza numarul total de locuri disponibile pentru o reprezentatie
+    int total_disp();
     //rezerva loc
 
     //destructor
@@ -609,6 +617,11 @@ Reprezentatie::Reprezentatie(Reprezentatie &r) {
 Data Reprezentatie::get_data() {
     return data_repr;
 }
+//calculeaza numarul total de locuri disponibile pentru o reprezentatie
+int Reprezentatie::total_disp() {
+    return C1.nr_disp() + C2.nr_disp() + C3.nr_disp();
+}
+
 class ReprList {
     class Node {
         Reprezentatie* repr;
@@ -797,14 +810,12 @@ ReprList::~ReprList() {
 //crearea unei reprezentatii vide
 Reprezentatie::Reprezentatie(): piesa(nullptr), data_repr(), s(nullptr), C1(), C2(), C3()  {}
 
-//cnstructor parametrizat
-Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, int l1, float p2, int l2, float p3, int l3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, l1), C2(p2, l2), C3(p3, l3) {
-   // lista_repr.add_repr(this);
-}
+//constructor parametrizat
+Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, sl->get_C1()), C2(p2, sl->get_C2()), C3(p3, sl->get_C3()) {}
 
 //afisarea detaliilor unei reprezentatii
 void Reprezentatie::display_info_repr() {
     cout << piesa->get_nume() << " ";
     data_repr.display_ora_minut();
-    cout << s->get_nume_sala() << " ";
+    cout << s->get_nume_sala() << " " << total_disp() << " ";
 }
