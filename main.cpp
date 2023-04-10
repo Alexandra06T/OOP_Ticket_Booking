@@ -47,6 +47,17 @@ int main() {
     lista_repr.add_repr(&r2);
     lista_repr.add_repr(&r3);
     lista_repr.display_list();
+    r1.rezerva(1,10);
+    Rezervare rez(&r1, 1, 10);
+    r2.rezerva(2,15);
+    Rezervare rez2(&r2, 2, 15);
+    lista_repr.display_list();
+   // rez.display_info_rez();
+    RezList lista_rez;
+    lista_rez.add_rez(&rez);
+    lista_rez.add_rez(&rez2);
+    lista_rez.display_list();
+
     return 0;
 }
 

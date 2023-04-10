@@ -46,8 +46,10 @@ String::String(const char *sir) {
     pointer[lungime] = '\0';
 }
 String::~String() {
-    delete[] pointer;
-    lungime = 0;
+    if (pointer != nullptr) {
+        delete[] pointer;
+        lungime = 0;
+    }
 }
 String::String(String &sir) {
     lungime = sir.lungime;
@@ -395,8 +397,6 @@ class Sala {
 public:
     //constructor parametrizat Sala
     Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3);
-    //copy constructor
-    Sala(Sala &s);
     //afiseaza informatii despre nume_sala si adresa
     void display();
     //getter nr_locuri_C1
@@ -421,15 +421,6 @@ public:
 };
 //constructor parametrizat Sala
 Sala::Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3): nume_sala(nume), adresa(adr), nr_locuri_C1(nr_C1), nr_locuri_C2(nr_C2), nr_locuri_C3(nr_C3)  {}
-
-//copy constructor
-Sala::Sala(Sala &s) {
-    nume_sala = s.nume_sala;
-    adresa = s.adresa;
-    nr_locuri_C1 = s.nr_locuri_C1;
-    nr_locuri_C2 = s.nr_locuri_C2;
-    nr_locuri_C3 = s.nr_locuri_C3;
-}
 
 //afiseaza informatii despre nume_sala si adresa
 void Sala::display() {
@@ -484,8 +475,9 @@ class Piesa_teatru {
 public:
     //constructor Piesa_teatru parametrizat
     Piesa_teatru(String nume, String a, String r, String d, String c, String m, int od, int md, int op, int mp);
-    //afisare informatii despre o piesa de taetru
+    //afisare informatii despre o piesa de teatru
     void piesa_display();
+    //getter nume piesa
     String get_nume();
 
 };
@@ -538,7 +530,7 @@ public:
     //afiseaza lista locuri disponibile
     void display_disponibil();
     //calculeaza pret, aplicand eventuale reduceri (0% (cod reducere 0), 20% ultima zi (cod reducere 1), 50% student (cod reducere 2), 100% elevi (cod reducere 3)
-    float pret_final(int statut);
+    float pret_final(int cod);
 
 };
 //constructor neparametrizat Categorie
@@ -557,10 +549,14 @@ void Categorie::set_pret(const float pret_nou) {
 //setter loc devine rezervat
 void Categorie::set_rezervat(const int i) {
     lista_locuri.set_i_val(i, 1);
+    nr_locuri_disponibile--;
+    nr_locuri_rezervate++;
 }
 //setter loc devine disponibil
 void Categorie::set_disponibil(int i) {
     lista_locuri.set_i_val(i,0);
+    nr_locuri_disponibile++;
+    nr_locuri_rezervate--;
 }
 //getter nr_locuri disponibile
 int Categorie::nr_disp() {
@@ -591,35 +587,52 @@ public:
     Reprezentatie();
     //constructor parametrizat
     Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3);
-    //copy constructor
-    Reprezentatie(Reprezentatie &r);
     //afisarea detaliilor unei reprezentatii
     void display_info_repr();
     //getter data
     Data get_data();
+    //getter pret
+    float get_pret(int categorie, int cod);
     //calculeaza numarul total de locuri disponibile pentru o reprezentatie
     int total_disp();
     //rezerva loc
-
-    //destructor
-
+    void rezerva(int cat, int loc);
+    //modifica locul rezervat
+    void modif_loc(int cat, int loc_nou);
 };
-//copy constructor
-Reprezentatie::Reprezentatie(Reprezentatie &r) {
-    piesa = r.piesa;
-    data_repr = r.get_data();
-    s = r.s;
-    C1 = r.C1;
-    C2 = r.C2;
-    C3 = r.C3;
-}
-
+//getter data
 Data Reprezentatie::get_data() {
     return data_repr;
+}
+//getter pret
+float Reprezentatie::get_pret(int categorie, int cod) {
+    if (categorie == 1) {
+        return C1.pret_final(cod);
+    }
+    else if(categorie == 2) {
+        return C2.pret_final(cod);
+    }
+    else return C3.pret_final(cod);
 }
 //calculeaza numarul total de locuri disponibile pentru o reprezentatie
 int Reprezentatie::total_disp() {
     return C1.nr_disp() + C2.nr_disp() + C3.nr_disp();
+}
+//rezerva loc
+void Reprezentatie::rezerva(int cat, int loc) {
+    if(cat == 1) {
+        C1.set_rezervat(loc);
+    }
+    else if(cat == 2) {
+        C2.set_rezervat(loc);
+    }
+    else {
+        C3.set_rezervat(loc);
+    }
+}
+//modifica locul rezervat
+void Reprezentatie::modif_loc(int cat, int loc_nou) {
+
 }
 
 class ReprList {
@@ -643,12 +656,6 @@ class ReprList {
         }
         Node* get_ptr() {
             return next;
-        }
-        Node(Node &nod) {
-            repr = new Reprezentatie;
-            *repr = *nod.get_repr();
-            next = new Node(nullptr, nullptr);
-            next = nod.get_ptr();
         }
         ~Node() {
             if (next != nullptr) {
@@ -818,4 +825,214 @@ void Reprezentatie::display_info_repr() {
     cout << piesa->get_nume() << " ";
     data_repr.display_ora_minut();
     cout << s->get_nume_sala() << " " << total_disp() << " ";
+}
+
+class Rezervare {
+    int cod_r; // cod reducere
+    int categorie;
+    int loc;
+    Reprezentatie* reprezentatie;
+public:
+    //constructor neparametrizat
+    Rezervare();
+    //constructor parametrizat
+    Rezervare(Reprezentatie* r, int cat, int l);
+    //getter data
+    Data get_data();
+    //afisare informatii rezervare
+    void display_info_rez();
+};
+//constructor neparametrizat
+Rezervare::Rezervare(): categorie(0), loc(0), reprezentatie(nullptr) {}
+
+//constructor parametrizat
+Rezervare::Rezervare(Reprezentatie* r, int cat, int l): categorie(cat), loc(l), reprezentatie(r) {
+    //reprezentatie.rezerva();
+}
+//getter data
+Data Rezervare::get_data() {
+    return reprezentatie->get_data();
+}
+//afisare informatii rezervare
+void Rezervare::display_info_rez() {
+    reprezentatie->display_info_repr();
+    cout << " Categorie " << categorie << " ";
+    cout << "Loc " << loc << " ";
+    cout << "Pret " << reprezentatie->get_pret(categorie, cod_r);
+}
+
+class RezList {
+    class Node {
+        Rezervare* rez;
+        Node* next;
+    public:
+        //constructor parametrizat
+        Node(Rezervare* r,Node *ptr){
+            rez = r;
+            next = ptr;
+        };
+        void set_rez(Rezervare* r) {
+            rez = r;
+        };
+        void set_ptr(Node* ptr) {
+            next = ptr;
+        };
+        Rezervare* get_rez() {
+                return rez;
+        };
+        Node* get_ptr() {
+            return next;
+        };
+        ~Node() {
+            if (next != nullptr) {
+                delete next;
+            }
+        }
+    };
+    Node *first;
+public:
+    //crearea unei liste vide
+    RezList();
+    //copy constructor
+    RezList(RezList &rl);
+    //inserare inaintea unui nod
+    void insert_before(Rezervare *r, Node* pre, Node* post);
+    //adaugarea unei rezervari in lista
+    void add_rez(Rezervare *r);
+    //afisarea listei sub forma de calendar
+    void display_list();
+    //destructor
+    ~RezList();
+};
+//crearea unei liste vide
+RezList::RezList() {
+    first = nullptr;
+}
+//copy constructor
+RezList::RezList(RezList &rl) {
+    first = new Node(rl.first->get_rez(), nullptr);
+    Node* last = first;
+    Node* nod = rl.first->get_ptr(), *newnode;
+    while (nod != nullptr) {
+        newnode = new Node(nod->get_rez(), nullptr);
+        last->set_ptr(newnode);
+        last = newnode;
+        nod = nod->get_ptr();
+    }
+}
+//inserare inaintea unui nod
+void RezList::insert_before(Rezervare *r, Node* pre, Node* post) {
+    //daca post este primul nod, inseram inainte, modificand first
+    if(post == pre) {
+        Node *newnode = new Node(r, first);
+        first = newnode;
+    }
+    else {
+        Node* newnode = new Node(r, post);
+        pre->set_ptr(newnode);
+    }
+}
+//adaugarea unei rezervari in lista
+void RezList::add_rez(Rezervare *r) {
+    Node* pre = first, *post = pre;
+    int check = 0; // check devine 1 cand inseram o noua reprezentatie
+    //daca lista nu are niciun nod
+    if(first == nullptr) {
+        first = new Node(r, nullptr);
+    }
+        //daca lista are un singur nod
+    else if (first->get_ptr() == nullptr) {
+        if (r->get_data().get_an() == first->get_rez()->get_data().get_an()) {
+            //daca anii sunt egali, verificam lunile
+            if (r->get_data().get_luna() == first->get_rez()->get_data().get_luna()) {
+                //daca lunile sunt egale verificam zilele
+                if (r->get_data().get_zi() == first->get_rez()->get_data().get_zi()) {
+                    //daca zilele sunt egale verificam orele
+                    if (r->get_data().get_ora() < first->get_rez()->get_data().get_ora()) {
+                        Node *newnode = new Node(r, first);
+                        first = newnode;
+                    } else {
+                        Node* newnode = new Node(r, nullptr);
+                        first->set_ptr(newnode);
+                    }
+                } else if (r->get_data().get_zi() < first->get_rez()->get_data().get_zi()) {
+                    Node *newnode = new Node(r, first);
+                    first = newnode;
+                }
+                else {
+                    //insert after
+                    Node* newnode = new Node(r, nullptr);
+                    first->set_ptr(newnode);
+                }
+            } else if (r->get_data().get_luna() < first->get_rez()->get_data().get_luna()) {
+                insert_before(r, pre, post);
+            }
+            else {
+                //insert after
+                Node* newnode = new Node(r, nullptr);
+                first->set_ptr(newnode);
+                check = 1;
+            }
+        } else if(r->get_data().get_an() < first->get_rez()->get_data().get_an()) {
+            insert_before(r, pre, post);
+        }
+        else {
+            //insert after
+            Node* newnode = new Node(r, nullptr);
+            first->set_ptr(newnode);
+            check = 1;
+        }
+    }else { //pentru doua sau mai multe noduri
+        while(post != nullptr && check == 0) {
+            if (r->get_data().get_an() == post->get_rez()->get_data().get_an()) {
+                //daca anii sunt egali, verificam lunile
+                if (r->get_data().get_luna() == post->get_rez()->get_data().get_luna()) {
+                    //daca lunile sunt egale verificam zilele
+                    if (r->get_data().get_zi() == post->get_rez()->get_data().get_zi()) {
+                        //daca zilele sunt egale verificam orele
+                        if (r->get_data().get_ora() < post->get_rez()->get_data().get_ora()) {
+                            insert_before(r, pre, post);
+                            check = 1;
+                        }
+                    } else if (r->get_data().get_zi() < post->get_rez()->get_data().get_zi()) {
+                        insert_before(r, pre, post);
+                        check = 1;
+                    }
+                } else if (r->get_data().get_luna() < post->get_rez()->get_data().get_luna()) {
+                    insert_before(r, pre, post);
+                    check = 1;
+                }
+            } else if(r->get_data().get_an() < post->get_rez()->get_data().get_an()) {
+                insert_before(r, pre, post);
+                check = 1;
+            }
+            pre = post;
+            post = post->get_ptr();
+        }
+        if(check == 0) {
+            Node* newnode = new Node(r, nullptr);
+            pre->set_ptr(newnode);
+        }
+    }
+}
+//afisarea listei sub forma de calendar
+void RezList::display_list() {
+    Node* nod = first;
+    nod->get_rez()->get_data().data_display();
+    cout << endl;
+    int indice = 1;
+    while (nod != nullptr) {
+        nod->get_rez()->display_info_rez();
+        cout << "_____________ " << indice << endl;
+        if(nod->get_ptr() != nullptr && nod->get_rez()->get_data() != nod->get_ptr()->get_rez()->get_data())
+            nod->get_ptr()->get_rez()->get_data().data_display();
+        cout << endl;
+        nod = nod->get_ptr();
+        indice ++;
+    }
+    cout << endl;
+}
+//destructor
+RezList::~RezList() {
+    delete first;
 }
