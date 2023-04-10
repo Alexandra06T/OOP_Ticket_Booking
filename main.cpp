@@ -28,6 +28,7 @@ int main() {
 //    s.concat(t);
 //    s.display();
     Piesa_teatru p("Cei drepti", "Albert Camus", "Mihai Maniutiu", "Adrian Damian", "Luiza Enescu", "Mihai Dobre", 1, 30);
+    Piesa_teatru p2("Cei drepti2", "Albert Camus", "Mihai Maniutiu", "Adrian Damian", "Luiza Enescu", "Mihai Dobre", 1, 30);
     //    p.piesa_display();
 //    Data d;
 //    d.data_display();
@@ -36,10 +37,15 @@ int main() {
 //    c.display_disponibil();
 //    cout << endl << c.pret_final(0);
     Reprezentatie r1(&p, 19, 0, 4, 5, 2023, &A, 100, 20, 50, 30, 20, 40);
+    Reprezentatie r2(&p2, 19, 0, 3, 5, 2023, &A, 100, 20, 50, 30, 20, 40);
+   // Reprezentatie r3(&p2, 19, 0, 6, 5, 2023, &A, 100, 20, 50, 30, 20, 40);
     p.piesa_display();
-    r1.display_info_repr();
+    r1.display_info_repr(); cout << endl;
+    r2.display_info_repr(); cout << endl;
     ReprList lista_repr;
     lista_repr.add_repr(&r1);
+    lista_repr.add_repr(&r2);
+   // lista_repr.add_repr(&r3);
     lista_repr.display_list();
     return 0;
 }

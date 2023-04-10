@@ -46,7 +46,7 @@ String::String(const char *sir) {
     pointer[lungime] = '\0';
 }
 String::~String() {
-//    delete[] pointer;
+    //delete[] pointer;
     lungime = 0;
 }
 String::String(String &sir) {
@@ -365,7 +365,7 @@ void Data::display_ora_minut() {
 }
 //supraincarcarea operatorului != pentru verificarea diferntei dintre doua zile
 bool operator != (Data const d1, Data const d2) {
-    if (d1.zi != d2.zi && d1.luna != d2.luna && d1.an != d2.an)
+    if (d1.zi != d2.zi || d1.luna != d2.luna || d1.an != d2.an)
         return true;
     return false;
 }
@@ -620,7 +620,7 @@ class ReprList {
             next = ptr;
         };
         void set_repr(Reprezentatie* r) {
-            repr = r; //sau alocare dinamica de memorie pt repr inainte?
+            repr = r;
         };
         void set_ptr(Node* ptr) {
             next = ptr;
@@ -681,7 +681,7 @@ ReprList::ReprList(ReprList &rl) {
 //inserare inaintea unui nod
 void ReprList::insert_before(Reprezentatie *r, Node* pre, Node* post) {
     //daca post este primul nod, inseram inainte, modificand first
-    if(post == first) {
+    if(post == pre) {
         Node *newnode = new Node(r, first);
         first = newnode;
     }
@@ -707,18 +707,38 @@ void ReprList::add_repr(Reprezentatie *r) {
                 if (r->get_data().get_zi() == first->get_repr()->get_data().get_zi()) {
                     //daca zilele sunt egale verificam orele
                     if (r->get_data().get_ora() < first->get_repr()->get_data().get_ora()) {
-                        insert_before(r, pre, post);
+                        Node *newnode = new Node(r, first);
+                        first = newnode;
                     } else {
-                        insert_before(r, pre, post);
+                        Node* newnode = new Node(r, nullptr);
+                        first->set_ptr(newnode);
                     }
                 } else if (r->get_data().get_zi() < first->get_repr()->get_data().get_zi()) {
-                    insert_before(r, pre, post);
+                    Node *newnode = new Node(r, first);
+                    first = newnode;
+                }
+                else {
+                    //insert after
+                    Node* newnode = new Node(r, nullptr);
+                    first->set_ptr(newnode);
                 }
             } else if (r->get_data().get_luna() < first->get_repr()->get_data().get_luna()) {
                 insert_before(r, pre, post);
             }
+            else {
+                //insert after
+                Node* newnode = new Node(r, nullptr);
+                first->set_ptr(newnode);
+                check = 1;
+            }
         } else if(r->get_data().get_an() < first->get_repr()->get_data().get_an()) {
             insert_before(r, pre, post);
+        }
+        else {
+            //insert after
+            Node* newnode = new Node(r, nullptr);
+            first->set_ptr(newnode);
+            check = 1;
         }
     }else { //pentru doua sau mai multe noduri
         while(post != nullptr && check == 0) {
@@ -729,9 +749,6 @@ void ReprList::add_repr(Reprezentatie *r) {
                     if (r->get_data().get_zi() == first->get_repr()->get_data().get_zi()) {
                         //daca zilele sunt egale verificam orele
                         if (r->get_data().get_ora() < first->get_repr()->get_data().get_ora()) {
-                            insert_before(r, pre, post);
-                            check = 1;
-                        } else {
                             insert_before(r, pre, post);
                             check = 1;
                         }
@@ -755,10 +772,12 @@ void ReprList::add_repr(Reprezentatie *r) {
 //afisarea listei sub forma de calendar
 void ReprList::display_list() {
     Node* nod = first;
+    nod->get_repr()->get_data().data_display();
+    cout << endl;
     int indice = 1;
     while (nod != nullptr) {
         nod->get_repr()->display_info_repr();
-        cout << "_____________" << indice << endl;
+        cout << "_____________ " << indice << endl;
         if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data())
             nod->get_ptr()->get_repr()->get_data().data_display();
         cout << endl;
