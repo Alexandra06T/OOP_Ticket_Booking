@@ -742,30 +742,34 @@ void ReprList::add_repr(Reprezentatie *r) {
         }
     }else { //pentru doua sau mai multe noduri
         while(post != nullptr && check == 0) {
-            if (r->get_data().get_an() == first->get_repr()->get_data().get_an()) {
+            if (r->get_data().get_an() == post->get_repr()->get_data().get_an()) {
                 //daca anii sunt egali, verificam lunile
-                if (r->get_data().get_luna() == first->get_repr()->get_data().get_luna()) {
+                if (r->get_data().get_luna() == post->get_repr()->get_data().get_luna()) {
                     //daca lunile sunt egale verificam zilele
-                    if (r->get_data().get_zi() == first->get_repr()->get_data().get_zi()) {
+                    if (r->get_data().get_zi() == post->get_repr()->get_data().get_zi()) {
                         //daca zilele sunt egale verificam orele
-                        if (r->get_data().get_ora() < first->get_repr()->get_data().get_ora()) {
+                        if (r->get_data().get_ora() < post->get_repr()->get_data().get_ora()) {
                             insert_before(r, pre, post);
                             check = 1;
                         }
-                    } else if (r->get_data().get_zi() < first->get_repr()->get_data().get_zi()) {
+                    } else if (r->get_data().get_zi() < post->get_repr()->get_data().get_zi()) {
                         insert_before(r, pre, post);
                         check = 1;
                     }
-                } else if (r->get_data().get_luna() < first->get_repr()->get_data().get_luna()) {
+                } else if (r->get_data().get_luna() < post->get_repr()->get_data().get_luna()) {
                         insert_before(r, pre, post);
                         check = 1;
                 }
-            } else if(r->get_data().get_an() < first->get_repr()->get_data().get_an()) {
+            } else if(r->get_data().get_an() < post->get_repr()->get_data().get_an()) {
                 insert_before(r, pre, post);
                 check = 1;
             }
             pre = post;
             post = post->get_ptr();
+        }
+        if(check == 0) {
+            Node* newnode = new Node(r, nullptr);
+            pre->set_ptr(newnode);
         }
     }
 }
