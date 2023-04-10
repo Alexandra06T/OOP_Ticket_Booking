@@ -593,12 +593,17 @@ public:
     Data get_data();
     //getter pret
     float get_pret(int categorie, int cod);
+    //getter piesa
+    Piesa_teatru get_piesa();
+    //getter sala
+    Sala get_sala();
     //calculeaza numarul total de locuri disponibile pentru o reprezentatie
     int total_disp();
     //rezerva loc
     void rezerva(int cat, int loc);
     //modifica locul rezervat
     void modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc_nou);
+
 };
 //getter data
 Data Reprezentatie::get_data() {
@@ -613,6 +618,14 @@ float Reprezentatie::get_pret(int categorie, int cod) {
         return C2.pret_final(cod);
     }
     else return C3.pret_final(cod);
+}
+//getter piesa
+Piesa_teatru Reprezentatie::get_piesa() {
+    return *piesa;
+}
+//getter sala
+Sala Reprezentatie::get_sala() {
+    return *s;
 }
 //calculeaza numarul total de locuri disponibile pentru o reprezentatie
 int Reprezentatie::total_disp() {
@@ -696,6 +709,8 @@ public:
     void display_list();
     //destructor
     ~ReprList();
+    //acceseaza al i lea element
+    Reprezentatie access_i_repr(int i);
 };
 
 //
@@ -820,14 +835,33 @@ void ReprList::display_list() {
     int indice = 1;
     while (nod != nullptr) {
         nod->get_repr()->display_info_repr();
-        cout << "_____________ " << indice << endl;
-        if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data())
+        cout << "_____________ " << indice;
+        if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data()) {
+            cout << endl;
             nod->get_ptr()->get_repr()->get_data().data_display();
+        }
         cout << endl;
         nod = nod->get_ptr();
         indice ++;
     }
-    cout << endl;
+}
+Reprezentatie ReprList::access_i_repr(int i) {
+    //pozitiile in lista incep de la 1
+    int indice = 0, check = 0;// check = 0 - nu s-a gasit pozitia i
+    Reprezentatie repr;
+    Node *nod = first;
+    while (nod != nullptr && indice < i) {
+        repr = *nod->get_repr();
+        if (indice == i-1)
+            check = 1;
+        nod = nod->get_ptr();
+        indice++;
+    }
+    if (check == 0) {
+        cout << "Pozitia cautata nu se afla in lista.\n";
+    }
+    else
+        return repr;
 }
 //destructor, se apeleaza recursiv pentru toate nodurile
 ReprList::~ReprList() {
@@ -855,7 +889,7 @@ public:
     //constructor neparametrizat
     Rezervare();
     //constructor parametrizat
-    Rezervare(Reprezentatie* r, int cat, int l);
+    Rezervare(Reprezentatie* r, int cat, int l, int cod);
     //getter data
     Data get_data();
     //afisare informatii rezervare
@@ -864,10 +898,10 @@ public:
     void modif_rez(int categ_noua, int loc_nou);
 };
 //constructor neparametrizat
-Rezervare::Rezervare(): categorie(0), loc(0), reprezentatie(nullptr) {}
+Rezervare::Rezervare(): categorie(0), loc(0), reprezentatie(nullptr), cod_r(0) {}
 
 //constructor parametrizat
-Rezervare::Rezervare(Reprezentatie* r, int cat, int l): categorie(cat), loc(l), reprezentatie(r) {
+Rezervare::Rezervare(Reprezentatie* r, int cat, int l, int cod): categorie(cat), loc(l), reprezentatie(r), cod_r(cod) {
     //reprezentatie.rezerva();
 }
 //getter data
