@@ -35,7 +35,7 @@ int main() {
     cout << "\nCALENDAR\nInformatii despre numele_piesei, ora de incepere, sala in care se desfasoara, numarul de locuri disponibile,\n codul reprezentatiei\n\n";
     lista_reprezentatii.display_list();
     while (true) {
-        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfiseaza rezervarile___4\nModifica rezervarea___5\n";
+        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfiseaza rezervarile___4\nModifica rezervarea___5\nAnuleaza rezervarea\n";
         cout << "\nIntroduceti codul optiunii alese:";
         int opt;
         cin >> opt;
@@ -87,7 +87,6 @@ int main() {
             cout << "Introduceti codul de reducere:\n20% rezervare in ultima zi___ 1\n50% student___ 2\n100% elev___ 3\nnu se aplica nicio reducere___0\n";
             int cod_r;
             cin >> cod_r;
-            r->get_cat(cat).display_disponibil();
             Rezervare rezervare(r, cat, loc, cod_r);
             lista_rezervari.add_rez(&rezervare);
             r->rezerva(cat, loc);
@@ -103,11 +102,34 @@ int main() {
             int i_rez;
             cin >> i_rez;
             Rezervare* r = lista_rezervari.access_i_rez(i_rez);
-            cout << "\nCategorie 1   locuri disponibile " << r->get_cat(1).nr_disp() << "   " << r->get_pret(1, 0) << " lei" << endl;
-            cout << "Categorie 2   locuri disponibile " << r->get_cat(2).nr_disp() << "   " << r->get_pret(2, 0) << " lei" << endl;
-            cout << "Categorie 3   locuri disponibile " << r->get_cat(3).nr_disp() << "   " << r->get_pret(3, 0) << " lei" << endl;
+            cout << "\nCategorie 1   locuri disponibile " << r->get_repr()->get_cat(1).nr_disp() << "   " << r->get_repr()->get_pret(1, 0) << " lei" << endl;
+            cout << "Categorie 2   locuri disponibile " << r->get_repr()->get_cat(2).nr_disp() << "   " << r->get_repr()->get_pret(2, 0) << " lei" << endl;
+            cout << "Categorie 3   locuri disponibile " << r->get_repr()->get_cat(3).nr_disp() << "   " << r->get_repr()->get_pret(3, 0) << " lei" << endl;
             cout << "\nIntroduceti codul categoriei:";
-            //de terminat;
+            int cat_noua;
+            cin >> cat_noua;
+            if(cat_noua < 1 || cat_noua >3) {
+                cout << "Cod categorie incorect.";
+                return 0;
+            }
+            cout << "\nLocuri disponibile Categoria "<< cat_noua << endl;
+            r->get_repr()->get_cat(cat_noua).display_disponibil();
+            cout << "\nIntroduceti numarul locului:";
+            int loc;
+            cin >> loc;
+            if (loc < 1 || loc > r->get_repr()->get_sala().get_C(cat_noua)) {
+                cout << "Numar loc incorect.";
+                return 0;
+            }
+            cout << "Introduceti codul de reducere:\n20% rezervare in ultima zi___ 1\n50% student___ 2\n100% elev___ 3\nnu se aplica nicio reducere___0\n";
+            int cod_r;
+            cin >> cod_r;
+            r->modif_rez(cat_noua, loc);
+            cout << "Rezervare modificata.\n";
+            r->display_info_rez();
+        }
+        else if(opt == 6) {
+
         }
         else {
             cout <<"Cod de optiune incorect.";

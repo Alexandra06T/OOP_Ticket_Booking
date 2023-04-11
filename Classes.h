@@ -667,11 +667,9 @@ void Reprezentatie::modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc
         C1.set_rezervat(loc_nou);
     }
     else if(cat_nou == 2) {
-        C2.set_disponibil(loc_vechi);
         C2.set_rezervat(loc_nou);
     }
     else {
-        C3.set_disponibil(loc_vechi);
         C3.set_rezervat(loc_nou);
     }
 }
@@ -721,8 +719,6 @@ public:
     //acceseaza al i lea element
     Reprezentatie* access_i_repr(int i);
 };
-
-//
 
 //crearea unei liste vide
 ReprList::ReprList() {
@@ -844,7 +840,7 @@ void ReprList::display_list() {
     int indice = 1;
     while (nod != nullptr) {
         nod->get_repr()->display_info_repr();
-        cout << "_____________ " << indice;
+        cout << "_____ " << indice;
         if(nod->get_ptr() != nullptr && nod->get_repr()->get_data() != nod->get_ptr()->get_repr()->get_data()) {
             cout << endl << endl;
             nod->get_ptr()->get_repr()->get_data().data_display();
@@ -897,6 +893,8 @@ public:
     Rezervare(Reprezentatie* r, int cat, int l, int cod);
     //getter data
     Data get_data();
+    //getter reprezentatie
+    Reprezentatie* get_repr();
     //afisare informatii rezervare
     void display_info_rez();
     //modifica loc rezervare
@@ -912,6 +910,10 @@ Rezervare::Rezervare(Reprezentatie* r, int cat, int l, int cod): categorie(cat),
 Data Rezervare::get_data() {
     return reprezentatie->get_data();
 }
+//getter reprezentatie
+Reprezentatie* Rezervare::get_repr() {
+    return reprezentatie;
+}
 //afisare informatii rezervare
 void Rezervare::display_info_rez() {
     reprezentatie->display_info_repr();
@@ -921,6 +923,7 @@ void Rezervare::display_info_rez() {
 }
 //modifica loc rezervare
 void Rezervare::modif_rez(int categ_noua, int loc_nou) {
+    reprezentatie->modif_loc(categorie, categ_noua, loc, loc_nou);
     categorie = categ_noua;
     loc = loc_nou;
 }
