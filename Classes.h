@@ -602,6 +602,8 @@ public:
     void rezerva(int cat, int loc);
     //modifica locul rezervat
     void modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc_nou);
+    //anuleaza rezervarea locului
+    void sterge_rez_loc(int cat, int loc);
 
 };
 //getter data
@@ -671,6 +673,18 @@ void Reprezentatie::modif_loc(int cat_vechi, int cat_nou, int loc_vechi, int loc
     }
     else {
         C3.set_rezervat(loc_nou);
+    }
+}
+//anuleaza rezervarea locului
+void Reprezentatie::sterge_rez_loc(int cat, int loc) {
+    if(cat == 1) {
+        C1.set_disponibil(loc);
+    }
+    else if(cat == 2) {
+        C2.set_disponibil(loc);
+    }
+    else {
+        C3.set_disponibil(loc);
     }
 }
 
@@ -895,6 +909,10 @@ public:
     Data get_data();
     //getter reprezentatie
     Reprezentatie* get_repr();
+    //getter categorie
+    int get_nr_cat();
+    //getter loc
+    int get_nr_loc();
     //afisare informatii rezervare
     void display_info_rez();
     //modifica loc rezervare
@@ -913,6 +931,14 @@ Data Rezervare::get_data() {
 //getter reprezentatie
 Reprezentatie* Rezervare::get_repr() {
     return reprezentatie;
+}
+//getter categorie
+int Rezervare::get_nr_cat() {
+    return categorie;
+}
+//getter loc
+int Rezervare::get_nr_loc() {
+    return loc;
 }
 //afisare informatii rezervare
 void Rezervare::display_info_rez() {
@@ -970,6 +996,8 @@ public:
     void display_list();
     //accesarea reprezentatiei de pe pozitia i
     Rezervare* access_i_rez(int i);
+    //sterge din lista rezervarea de pe pozitia i
+    void sterge_rez(int i);
     //destructor
     ~RezList();
 };
@@ -1119,6 +1147,29 @@ Rezervare* RezList::access_i_rez(int i) {
         indice++;
     }
     cout << "Pozitia cautata nu se afla in lista.\n";
+}
+//sterge din lista rezervarea de pe pozitia i
+void RezList::sterge_rez(int i) {
+    //pozitiile in lista incep de la 1
+    Node *del;
+    if(i == 1) {
+        del = first;
+        first = first->get_ptr();
+        delete del;
+    }
+    else {
+        int indice = 0;
+        Rezervare rez;
+        Node *nod = first;
+        while (nod != nullptr && indice < i-2) {
+            nod = nod->get_ptr();
+            indice++;
+        }
+        del = nod->get_ptr();
+        del->get_rez()->get_repr()->sterge_rez_loc(del->get_rez()->get_nr_cat(), del->get_rez()->get_nr_loc());
+        nod->set_ptr(nod->get_ptr()->get_ptr());
+        delete del;
+    }
 }
 //destructor
 RezList::~RezList() {

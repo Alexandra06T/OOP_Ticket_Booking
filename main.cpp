@@ -35,7 +35,7 @@ int main() {
     cout << "\nCALENDAR\nInformatii despre numele_piesei, ora de incepere, sala in care se desfasoara, numarul de locuri disponibile,\n codul reprezentatiei\n\n";
     lista_reprezentatii.display_list();
     while (true) {
-        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfiseaza rezervarile___4\nModifica rezervarea___5\nAnuleaza rezervarea\n";
+        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfisare rezervari___4\nModifica rezervarea___5\nAnuleaza rezervarea___6\n";
         cout << "\nIntroduceti codul optiunii alese:";
         int opt;
         cin >> opt;
@@ -129,7 +129,12 @@ int main() {
             r->display_info_rez();
         }
         else if(opt == 6) {
-
+            lista_rezervari.display_list();
+            cout << "\nIntroduceti cod rezervare\n";
+            int i_rez;
+            cin >> i_rez;
+            lista_rezervari.sterge_rez(i_rez);
+            cout << "Rezervare anulata.\n";
         }
         else {
             cout <<"Cod de optiune incorect.";
