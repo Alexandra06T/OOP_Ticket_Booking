@@ -30,12 +30,19 @@ int main() {
     lista_reprezentatii.add_repr(&CS12Mai);
     lista_reprezentatii.add_repr(&RM18Mai);
     lista_reprezentatii.add_repr(&CCV12Mai);
+    //rezervari
+    Rezervare r1(&CCV12Mai, 1, 7, 1);
+    Rezervare r2(&RM18Mai, 2, 23, 0);
+    Rezervare r3(&TV5Mai, 3, 15, 2);
     RezList lista_rezervari;
+    lista_rezervari.add_rez(&r1);
+    lista_rezervari.add_rez(&r2);
+    lista_rezervari.add_rez(&r3);
     //meniu
     cout << "\nCALENDAR\nInformatii despre numele_piesei, ora de incepere, sala in care se desfasoara, numarul de locuri disponibile,\n codul reprezentatiei\n\n";
     lista_reprezentatii.display_list();
     while (true) {
-        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfisare rezervari___4\nModifica rezervarea___5\nAnuleaza rezervarea___6\n";
+        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfisare rezervari___4\nModifica rezervarea___5\nAnuleaza rezervarea___6\nCreeaza sala___7\nCreeaza piesa de teatru___8\nObs: Pot fi create cel mult o rezervare, cel mult o sala si cel mult o piesa de teatru.\n";
         cout << "\nIntroduceti codul optiunii alese:";
         int opt;
         cin >> opt;
@@ -49,7 +56,7 @@ int main() {
                 r->get_piesa().piesa_display();
             }
             else {
-                cout << "\nCod de reprezetatie incorect.";
+                cout << "\nCod de reprezentatie incorect.";
                 return 0;
             }
         }
@@ -135,6 +142,119 @@ int main() {
             cin >> i_rez;
             lista_rezervari.sterge_rez(i_rez);
             cout << "Rezervare anulata.\n";
+        }
+        else if(opt == 7) {
+            cout << "in loc de spatiu, folositi _\n";
+            //citirea datelor
+            cout << "\nIntroduceti numele salii\n";
+            char nume[100];
+            cin >> nume;
+            cout << "\nIntroduceti adresa\n";
+            char adresa[300];
+            cin >> adresa;
+            cout << "\nIntroduceti numarul de locuri din Categoria 1\n";
+            int nr_C1;
+            cin >> nr_C1;
+            cout << "\nIntroduceti numarul de locuri din Categoria 2\n";
+            int nr_C2;
+            cin >> nr_C2;
+            cout << "\nIntroduceti numarul de locuri din Categoria 3\n";
+            int nr_C3;
+            cin >> nr_C3;
+            //crearea obiectului
+            Sala s(nume, adresa, nr_C1, nr_C2, nr_C3);
+            cout << "Sala a fost introdusa in aplicatie.\n";
+            s.display();
+            cout << "\nVreti sa efectuati vrei modificare? da (1) sau nu (0)\n";
+            int modif;
+            cin >> modif;
+            if (modif == 1) {
+                cout << "Modificati numele___ 1\nModificati adresa___ 2\nModificati numarul de locuri la categoria 1___ 3\nModificati numarul de locuri la categoria 2___ 4\nModifiacti numarul de locuri la categoria 3___5\n";
+                cin >> modif;
+                if(modif == 1) {
+                    cout << "\nIntroduceti numele salii\n";
+                    cin >> nume;
+                    s.set_nume(nume);
+                }
+                else if(modif == 2) {
+                    cout << "\nIntroduceti adresa\n";
+                    cin >> adresa;
+                    s.set_adresa(adresa);
+                }
+                else if(modif == 3) {
+                    cout << "\nIntroduceti numarul de locuri din Categoria 1\n";
+                    cin >> nr_C1;
+                    s.set_C1(nr_C1);
+                }
+                else if(modif == 4) {
+                    cout << "\nIntroduceti numarul de locuri din Categoria 2\n";
+                    cin >> nr_C2;
+                    s.set_C2(nr_C2);
+                }
+                else if(modif == 5) {
+                    cout << "\nIntroduceti numarul de locuri din Categoria 3\n";
+                    cin >> nr_C3;
+                    s.set_C3(nr_C3);
+                }
+                cout << "Modificarea a fost efectuata.\n";
+                s.display();
+            }
+        }
+        else if(opt == 8) {
+            //citirea datelor
+            cout << "\nIntroduceti numele piesei de teatru\n";
+            char nume[100];
+            cin >> nume;
+            cout << "\nIntroduceti numele autorului\n";
+            char a[100];
+            cin >> a;
+            cout << "\nIntroduceti numele responsabilului pentru regie\n";
+            char r[100];
+            cin >> r;
+            cout << "\nIntroduceti numele responsabilului pentru decor\n";
+            char d[100];
+            cin >> d;
+            cout << "\nIntroduceti numele responsabilului pentru costume\n";
+            char c[100];
+            cin >> c;
+            cout << "\nIntroduceti numele responsabilului pentru muzica\n";
+            char m[100];
+            cin >> m;
+            cout << "\nIntroduceti durata piesei (numarul de ore)\n";
+            int od;
+            cin >> od;
+            cout << "\nIntroduceti durata piesei (numarul de minute)\n";
+            int md;
+            cin >> md;
+            cout << "\nIntroduceti durata pauzei (numarul de ore)\n";
+            int op;
+            cin >> op;
+            cout << "\nIntroduceti durata pauzei (numarul de minute)\n";
+            int mp;
+            cin >> mp;
+            //crearea obiectului
+            Piesa_teatru p(nume, a, r, d, c, m, od, md, op, mp);
+            cout << "Piesa a fost introdusa in aplicatie\n";
+            p.piesa_display();
+            cout << "\nVreti sa efectuati vrei modificare? da (1) sau nu (0)\n";
+            int modif;
+            cin >> modif;
+            if (modif == 1) {
+                cout << "Modificati numele___ 1\nModificati autorul___ 2\n";
+                cin >> modif;
+                if(modif == 1) {
+                    cout << "\nIntroduceti numele piesei\n";
+                    cin >> nume;
+                    p.set_nume(nume);
+                }
+                else if(modif == 2) {
+                    cout << "\nIntroduceti numele autorului\n";
+                    cin >> a;
+                    p.set_autor(a);
+                }
+                cout << "Modificarea a fost efectuata.\n";
+                p.piesa_display();
+            }
         }
         else {
             cout <<"Cod de optiune incorect.";

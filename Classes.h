@@ -1,7 +1,3 @@
-//
-// Created by email on 07.04.2023.
-//
-
 #ifndef TICKET_BOOKING_CLASSES_H
 #define TICKET_BOOKING_CLASSES_H
 
@@ -16,10 +12,15 @@ class String {
     char* pointer;
     int lungime;
 public:
+    //constructor neparametrizat
     String();
+    //constructor parametrizat
     String(const char *sir);
+    //destructor
     ~String();
+    //copy constructor
     String(String &sir);
+    //supraincarcarea operatorului =
     String& operator = (String const&sir){
         if(pointer != nullptr)
             delete[] pointer;
@@ -28,47 +29,58 @@ public:
         ::strncpy(pointer, sir.pointer, lungime);
         return *this;
     }
+    //functie afisare
     void display();
+    //adaugarea unui caracter la finalul stringului
     void add_char(char c);
+    //concatenarea a doua stringuri
     void concat(String sir);
+    //gasirea unui substring intr-un string
     char* find_substr(const char* subsir);
+    //supraincarcarea operatorului <<
     friend ostream & operator << (ostream &out, String const& s);
 };
-
+//constructor neparametrizat
 String::String() {
     lungime = 0;
     pointer = nullptr;
 }
+//constructor parametrizat
 String::String(const char *sir) {
     lungime = ::strlen(sir);
     pointer = new char[lungime];
     ::strncpy(pointer, sir, lungime);
     pointer[lungime] = '\0';
 }
+//destructor
 String::~String() {
     if (pointer != nullptr) {
         delete[] pointer;
         lungime = 0;
     }
 }
+//copy constructor
 String::String(String &sir) {
     lungime = sir.lungime;
     pointer = new char[lungime];
     ::strncpy(pointer, sir.pointer, lungime);
     pointer[lungime] = '\0';
 }
+//functie afisare
 void String::display() {
     int i;
     for (i = 0; i < lungime; i++)
         cout << pointer[i];
     cout << endl;
 }
+//supraincarcarea operatorului <<
 ostream & operator << (ostream &out, String const& s) {
     int i;
     for (i = 0; i < s.lungime; i++)
         out << s.pointer[i];
     return out;
 }
+//adaugarea unui caracter la finalul stringului
 void String::add_char(char c) {
     char* newpointer = new char[lungime+1];
     ::strncpy(newpointer, pointer, lungime);
@@ -77,6 +89,7 @@ void String::add_char(char c) {
     newpointer[lungime] = '\0';
     pointer = newpointer;
 }
+//concatenarea a doua stringuri
 void String::concat(const String sir) {
     char* newpointer = new char[lungime+sir.lungime];
     ::strncpy(newpointer, pointer, lungime);
@@ -85,6 +98,7 @@ void String::concat(const String sir) {
     pointer[lungime] = '\0';
     pointer = newpointer;
 }
+//gasirea unui substring intr-un string
 char* String::find_substr(const char* subsir) {
     return ::strstr(pointer, subsir);
 }
@@ -472,6 +486,10 @@ public:
     void piesa_display();
     //getter nume piesa
     String get_nume();
+    //setter nume piesa
+    void set_nume(String nume);
+    //setter nume autor
+    void set_autor(String a);
 
 };
 //constructor Piesa_teatru parametrizat
@@ -498,6 +516,14 @@ void Piesa_teatru::piesa_display() {
 String Piesa_teatru::get_nume() {
     return nume_piesa;
 }
+//setter nume piesa
+void Piesa_teatru::set_nume(String nume) {
+    nume_piesa = nume;
+}
+void Piesa_teatru::set_autor(String a) {
+    autor = a;
+}
+
 class Categorie {
     //pentru fiecare categorie in parte, locurile sunt etichetate de la 1 la nr de locuri total din categorie
     float pret;
@@ -508,7 +534,7 @@ class Categorie {
 public:
     //constructor neparametrizat Categorie
     Categorie();
-    //constructor neparametrizat Categorie
+    //constructor parametrizat Categorie
     Categorie(float p, int d);
     //getter pret
     float get_pret();
@@ -606,6 +632,18 @@ public:
     void sterge_rez_loc(int cat, int loc);
 
 };
+//crearea unei reprezentatii vide
+Reprezentatie::Reprezentatie(): piesa(nullptr), data_repr(), s(nullptr), C1(), C2(), C3()  {}
+
+//constructor parametrizat
+Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, sl->get_C(1)), C2(p2, sl->get_C(2)), C3(p3, sl->get_C(3)) {}
+
+//afisarea detaliilor unei reprezentatii
+void Reprezentatie::display_info_repr() {
+    cout << piesa->get_nume() << "   ";
+    data_repr.display_ora_minut();
+    cout <<  s->get_nume_sala() << "   Numar locuri disponibile " << total_disp() << " ";
+}
 //getter data
 Data Reprezentatie::get_data() {
     return data_repr;
@@ -882,18 +920,6 @@ Reprezentatie* ReprList::access_i_repr(int i) {
 ReprList::~ReprList() {
     delete first;
 }
-//crearea unei reprezentatii vide
-Reprezentatie::Reprezentatie(): piesa(nullptr), data_repr(), s(nullptr), C1(), C2(), C3()  {}
-
-//constructor parametrizat
-Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3): piesa(p), data_repr(o,m,z,l,a), s(sl), C1(p1, sl->get_C(1)), C2(p2, sl->get_C(2)), C3(p3, sl->get_C(3)) {}
-
-//afisarea detaliilor unei reprezentatii
-void Reprezentatie::display_info_repr() {
-    cout << piesa->get_nume() << "   ";
-    data_repr.display_ora_minut();
-    cout << "  Sala " <<  s->get_nume_sala() << "   Numar locuri disponibile " << total_disp() << " ";
-}
 
 class Rezervare {
     int cod_r; // cod reducere
@@ -1121,7 +1147,7 @@ void RezList::display_list() {
         int indice = 1;
         while (nod != nullptr) {
             nod->get_rez()->display_info_rez();
-            cout << "_____________ " << indice << endl;
+            cout << "_______ " << indice << endl;
             if(nod->get_ptr() != nullptr && nod->get_rez()->get_data() != nod->get_ptr()->get_rez()->get_data())
                 nod->get_ptr()->get_rez()->get_data().data_display();
             cout << endl;
