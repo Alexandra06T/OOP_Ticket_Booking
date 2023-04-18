@@ -16,7 +16,7 @@ ofera utilizatorului posibilitatea de:
 - a se informa cu privire la sala in care se va desfasura spectacolului dorit
   - numele salii
   - adresa
-- a rezerva un loc la un spectacol ales (se creeaza )
+- a rezerva un loc la un spectacol ales (se creeaza un nou obiect de tip rezervare in urma citirii unor date de la tastatura)
   - utilizatorul specifica reprezentatia la care intentioneaza sa participe
   - alege o categorie, fiind informat asupra numarului de locuri disponibile
   ramase si de pretul fiecarei categorii
@@ -41,7 +41,7 @@ ofera utilizatorului posibilitatea de:
   - introduce un cod de reducere
   - este informat ca modificarea a avut loc cu succes si i se afiseaza un rezumat
 - a anula o rezervare realizata in prealabil
-De asemenea, utilizatorul poate introduce informatii despre o piesa de teatru si despre o sala si poate efectua modificari asupra datelor introduse.
+<br> De asemenea, utilizatorul poate introduce informatii despre o piesa de teatru si despre o sala si poate efectua modificari asupra datelor introduse.
 
 ## Scurta descriere a provocarilor intalnite in realizarea aplicatiei
 
@@ -91,7 +91,7 @@ Clasa pentru liste simplu inlantuite de obiecte de tip Reprezentatie, retinute i
 
 ### Clasa Rezervare
 
-Clasa pentru gestionarea rezervarilor utilizatorului. Fiecare obiec de tip Rezervare contine un camp de tip pointer catre un obiect Reprezentatie.
+Clasa pentru gestionarea rezervarilor utilizatorului. Fiecare obiect de tip Rezervare contine un camp de tip pointer catre un obiect Reprezentatie.
 
 ### Clasa RezList
 
