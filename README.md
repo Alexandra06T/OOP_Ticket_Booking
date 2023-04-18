@@ -4,7 +4,7 @@
 Respectand principiile Programarii Orientate pe Obiecte, 
 construita folosind limbajul C++, aplicatia gestioneaza 
 rezervarile efectuate de clienti la spectacolele
-organizate de un teatru. Aceasta ofera un calendar cu reprezentatiile dintr-o anumita perioada si meniu interactiv ce ii 
+organizate de un teatru. Aceasta ofera un calendar cu reprezentatiile dintr-o anumita perioada si un meniu interactiv ce ii 
 ofera utilizatorului posibilitatea de:
 - a se informa cu privire la spectacolele organizate
     - numele piesei
