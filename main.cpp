@@ -1,6 +1,10 @@
 #include <iostream>
 #include "Classes.h"
 
+int Rezervare::nr_rezervari = 0;
+vector<Sala*> Sala::lista_sali;
+int Sala::nr_sali = 0;
+
 int main() {
     //piese de teatru
     Piesa_teatru CeiDrepti("Cei drepti", "Albert Camus", "Mihai Maniutiu", "Adrian Damian", "Luiza Enescu", "Mihai Dobre", 1, 30);
@@ -8,19 +12,41 @@ int main() {
     Piesa_teatru CursaDeSoareci("Cursa de Soareci", "Agatha Christie", "Erwin Simensohn", "-", "-", "Vlaicu Golgea", 2, 15, 0, 15 );
     Piesa_teatru RegeleMoare("Regele moare", "Eugene Ionesco", "Andrei si Andreea Grosu", "-", "-", "-", 1, 40);
     Piesa_teatru CraiiDeCurteaVeche("Craii de Curtea-Veche", "Mateiu Caragiale", "Dragos Galgotiu", "Dragos Galgotiu", "Lia Mantoc", "Dragos Galgotiu", 2, 15, 0, 10);
+    //balet
+    Balet DonQuijote("Don Quijote", "Miguel de Cervantes", "Katerina Slavicka-Elslegrova", "Jaroslav Slavicky", "-", "-", 3, 30);
+    Balet LaculLebedelor("Lacul Lebedelor", "Piotr Ilici Ceaikovski", "-", "Oleg Danovski", "Viorica Petrovici & Adrian Damian", "-", 3, 30);
+    MyVector v;
+    v.push_back(&LaculLebedelor);
+    v.push_back(&DonQuijote);
+    v.display();
     //sali
     Sala Mica("Sala Mica", "Bucuresti, Sector 1, Str. Mare, nr. 5", 20, 30, 40);
     Sala Amfiteatru("Sala Amfiteatru", "Bucuresti, Sector 1, Str. Mare, nr.6", 35, 45, 55);
     Sala Mare("Sala Mare", "Bucuresti, Sector 1, Str. Mare, nr.2", 40, 50, 60);
     //reprezentatii
     int nr_repr = 7;
-    Reprezentatie CD5Mai(&CeiDrepti, 19, 30, 5, 5, 2023, &Mare, 100, 80, 50);
-    Reprezentatie CD12Mai(&CeiDrepti, 20, 0, 12, 5, 2023, &Mare, 100, 80, 50);
-    Reprezentatie TV5Mai(&TitanicVals, 19, 30, 5, 5, 2023, &Amfiteatru, 80, 60, 50);
-    Reprezentatie TV20Mai(&TitanicVals, 20, 0, 20, 5, 2023, &Amfiteatru, 80, 60, 50);
-    Reprezentatie CS12Mai(&CursaDeSoareci, 20, 30, 12, 5, 2023, &Mica, 50, 30, 20);
-    Reprezentatie RM18Mai(&RegeleMoare, 19, 30, 18, 5, 2023, &Amfiteatru, 90, 80, 70);
-    Reprezentatie CCV12Mai(&CraiiDeCurteaVeche, 20, 0, 12, 5, 2023, &Mica, 50, 30, 20);
+    Reprezentatie CD5Mai(&CeiDrepti, 19, 30, 5, 5, 2023, &Mare, 100, 80, 50, 0, 0);
+    Reprezentatie CD12Mai(&CeiDrepti, 20, 0, 12, 5, 2023, &Mare, 100, 80, 50, 1, 0.3);
+    Reprezentatie TV5Mai(&TitanicVals, 19, 30, 5, 5, 2023, &Amfiteatru, 80, 60, 50, 2, 0.2);
+    Reprezentatie TV20Mai(&TitanicVals, 20, 0, 20, 5, 2023, &Amfiteatru, 80, 60, 50, 3, 0.1);
+    Reprezentatie CS12Mai(&CursaDeSoareci, 20, 30, 12, 5, 2023, &Mica, 50, 30, 20, 0, 0.4);
+    Reprezentatie RM18Mai(&RegeleMoare, 19, 30, 18, 5, 2023, &Amfiteatru, 90, 80, 70, 0);
+    Reprezentatie CCV12Mai(&CraiiDeCurteaVeche, 20, 0, 12, 5, 2023, &Mica, 50, 30, 20, 0);
+    // amanam o reprezentatie cu oferta
+    CD12Mai.get_cat(1)->display_start_date();
+    CD12Mai.get_cat(1)->amana(20, 0, 13, 5, 2023);
+    CD12Mai.get_cat(1)->display_start_date();
+    cout << endl;
+    // amanam o reprezentatie cu reducere de ultima zi
+    TV5Mai.get_cat(1)->display_start_date();
+    TV5Mai.get_cat(1)->amana(19, 30, 8, 5, 2023);
+    TV5Mai.get_cat(1)->display_start_date();
+    cout << endl;
+    // amanam o reprezentatie cu reducere dubla
+    TV20Mai.get_cat(1)->display_start_date();
+    TV20Mai.get_cat(1)->amana(20, 0, 25, 5, 2023);
+    TV20Mai.get_cat(1)->display_start_date();
+    cout << endl;
     //lista de reprezentatii
     ReprList lista_reprezentatii;
     lista_reprezentatii.add_repr(&CD5Mai);
@@ -31,18 +57,21 @@ int main() {
     lista_reprezentatii.add_repr(&RM18Mai);
     lista_reprezentatii.add_repr(&CCV12Mai);
     //rezervari
-    Rezervare r1(&CCV12Mai, 1, 7, 1);
-    Rezervare r2(&RM18Mai, 2, 23, 0);
-    Rezervare r3(&TV5Mai, 3, 15, 2);
+//    Rezervare r1(&CCV12Mai, 1, 7, 1);
+//    Rezervare r2(&RM18Mai, 2, 23, 0);
+//    Rezervare r3(&TV5Mai, 3, 15, 2);
     RezList lista_rezervari;
-    lista_rezervari.add_rez(&r1);
-    lista_rezervari.add_rez(&r2);
-    lista_rezervari.add_rez(&r3);
+//    lista_rezervari.add_rez(&r1);
+//    lista_rezervari.add_rez(&r2);
+//    lista_rezervari.add_rez(&r3);
     //meniu
     cout << "\nCALENDAR\nInformatii despre numele_piesei, ora de incepere, sala in care se desfasoara, numarul de locuri disponibile,\n codul reprezentatiei\n\n";
+    cout << "OBS: Aplicatia ofera doar informatii despre sectiunea Balet. Pentru rezervari, va rugam sa mergeti la casa de bilete.";
     lista_reprezentatii.display_list();
     while (true) {
-        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfisare rezervari___4\nModifica rezervarea___5\nAnuleaza rezervarea___6\nCreeaza sala___7\nCreeaza piesa de teatru___8\nObs: Pot fi create cel mult o rezervare, cel mult o sala si cel mult o piesa de teatru.\n";
+        Rezervare::initiere();
+
+        cout << "\nOPTIUNI:\nAfisare detalii spectacol___1\nAfisare detalii sala___2\nRezerva___3\nAfisare rezervari___4\nModifica rezervarea___5\nAnuleaza rezervarea___6\nCreeaza sala___7\nCreeaza piesa de teatru___8\n";
         cout << "\nIntroduceti codul optiunii alese:";
         int opt;
         cin >> opt;
@@ -53,7 +82,7 @@ int main() {
             Reprezentatie* r = lista_reprezentatii.access_i_repr(rez);
             if(rez <= nr_repr && rez >= 1) {
                 cout << endl;
-                r->get_piesa().piesa_display();
+                r->get_piesa().display();
             }
             else {
                 cout << "\nCod de reprezentatie incorect.";
@@ -61,20 +90,20 @@ int main() {
             }
         }
         else if(opt == 2) {
-            cout << "\nIntroduceti codul reprezentatiei:";
-            int rez;
-            cin >> rez;
-            Reprezentatie* r = lista_reprezentatii.access_i_repr(rez);
-            r->get_sala().display();
-        }
+            Sala::display_sali();
+            cout << "\nIntroduceti codul salii:";
+            int s;
+            cin >> s;
+            Sala::get_i_sala(s)->display();
+            }
         else if(opt == 3) {
             cout << "\nIntroduceti codul reprezentatiei:";
             int rez;
             cin >> rez;
             Reprezentatie* r = lista_reprezentatii.access_i_repr(rez);
-            cout << "\nCategorie 1   locuri disponibile " << r->get_cat(1).nr_disp() << "   " << r->get_pret(1, 0) << " lei" << endl;
-            cout << "Categorie 2   locuri disponibile " << r->get_cat(2).nr_disp() << "   " << r->get_pret(2, 0) << " lei" << endl;
-            cout << "Categorie 3   locuri disponibile " << r->get_cat(3).nr_disp() << "   " << r->get_pret(3, 0) << " lei" << endl;
+            cout << "\nCategorie 1   locuri disponibile " << r->get_cat(1)->nr_disp() << "   " << r->get_pret(1, 0) << " lei" << endl;
+            cout << "Categorie 2   locuri disponibile " << r->get_cat(2)->nr_disp() << "   " << r->get_pret(2, 0) << " lei" << endl;
+            cout << "Categorie 3   locuri disponibile " << r->get_cat(3)->nr_disp() << "   " << r->get_pret(3, 0) << " lei" << endl;
             cout << "\nIntroduceti codul categoriei:";
             int cat;
             cin >> cat;
@@ -83,7 +112,7 @@ int main() {
                 return 0;
             }
             cout << "\nLocuri disponibile Categoria "<< cat << endl;
-            r->get_cat(cat).display_disponibil();
+            r->get_cat(cat)->display_disponibil();
             cout << "\nIntroduceti numarul locului:";
             int loc;
             cin >> loc;
@@ -91,14 +120,16 @@ int main() {
                 cout << "Numar loc incorect.";
                 return 0;
             }
-            cout << "Introduceti codul de reducere:\n20% rezervare in ultima zi___ 1\n50% student___ 2\n100% elev___ 3\nnu se aplica nicio reducere___0\n";
+            cout << "Introduceti codul de reducere:\n100% elev___ 1\n50% student___ 2\nnu se aplica nicio reducere___0\n";
             int cod_r;
             cin >> cod_r;
-            Rezervare rezervare(r, cat, loc, cod_r);
-            lista_rezervari.add_rez(&rezervare);
+            Rezervare *rezervare = new Rezervare(r, cat, loc, cod_r);
+            lista_rezervari.add_rez(rezervare);
             r->rezerva(cat, loc);
             cout << "Rezervare finalizata.\n";
-            rezervare.display_info_rez();
+            rezervare->display_info_rez();
+
+            Rezervare::fidelizare();
         }
         else if(opt == 4) {
             lista_rezervari.display_list();
@@ -106,42 +137,78 @@ int main() {
         else if(opt == 5) {
             lista_rezervari.display_list();
             cout << "\nIntroduceti cod rezervare\n";
-            int i_rez;
-            cin >> i_rez;
-            Rezervare* r = lista_rezervari.access_i_rez(i_rez);
-            cout << "\nCategorie 1   locuri disponibile " << r->get_repr()->get_cat(1).nr_disp() << "   " << r->get_repr()->get_pret(1, 0) << " lei" << endl;
-            cout << "Categorie 2   locuri disponibile " << r->get_repr()->get_cat(2).nr_disp() << "   " << r->get_repr()->get_pret(2, 0) << " lei" << endl;
-            cout << "Categorie 3   locuri disponibile " << r->get_repr()->get_cat(3).nr_disp() << "   " << r->get_repr()->get_pret(3, 0) << " lei" << endl;
-            cout << "\nIntroduceti codul categoriei:";
-            int cat_noua;
-            cin >> cat_noua;
-            if(cat_noua < 1 || cat_noua >3) {
-                cout << "Cod categorie incorect.";
-                return 0;
+            double i_rez;
+            cin >> i_rez;//
+            try {
+                try {
+                    verifica_int(i_rez);
+                    Rezervare::verifica_valabilitate(i_rez);
+                }
+                catch (const wrongType& exceptie) {
+                    cout << "\nVa rugam ca data viitoare sa introduceti date compatibile.\n";
+                    throw (wrongInput("Nu au fost introduse date compatibile.\n"));
+                }
+                catch (const wrongInput& exceptie) {
+                    cout << "\nVa rugam ca data viitoare sa introduceti date valide.\n";
+                    throw;
+                }
+                Rezervare* r = lista_rezervari.access_i_rez(i_rez);
+                cout << "\nCategorie 1   locuri disponibile " << r->get_repr()->get_cat(1)->nr_disp() << "   " << r->get_repr()->get_pret(1, 0) << " lei" << endl;
+                cout << "Categorie 2   locuri disponibile " << r->get_repr()->get_cat(2)->nr_disp() << "   " << r->get_repr()->get_pret(2, 0) << " lei" << endl;
+                cout << "Categorie 3   locuri disponibile " << r->get_repr()->get_cat(3)->nr_disp() << "   " << r->get_repr()->get_pret(3, 0) << " lei" << endl;
+                cout << "\nIntroduceti codul categoriei:";
+                int cat_noua;
+                cin >> cat_noua;
+                if(cat_noua < 1 || cat_noua >3) {
+                    cout << "Cod categorie incorect.";
+                    return 0;
+                }
+                cout << "\nLocuri disponibile Categoria "<< cat_noua << endl;
+                r->get_repr()->get_cat(cat_noua)->display_disponibil();
+                cout << "\nIntroduceti numarul locului:";
+                int loc;
+                cin >> loc;
+                if (loc < 1 || loc > r->get_repr()->get_sala().get_C(cat_noua)) {
+                    cout << "Numar loc incorect.";
+                    return 0;
+                }
+                cout << "Introduceti codul de reducere:\n20% rezervare in ultima zi___ 1\n50% student___ 2\n100% elev___ 3\nnu se aplica nicio reducere___0\n";
+                int cod_r;
+                cin >> cod_r;
+                r->modif_rez(cat_noua, loc);
+                cout << "Rezervare modificata.\n";
+                r->display_info_rez();
             }
-            cout << "\nLocuri disponibile Categoria "<< cat_noua << endl;
-            r->get_repr()->get_cat(cat_noua).display_disponibil();
-            cout << "\nIntroduceti numarul locului:";
-            int loc;
-            cin >> loc;
-            if (loc < 1 || loc > r->get_repr()->get_sala().get_C(cat_noua)) {
-                cout << "Numar loc incorect.";
-                return 0;
+            catch (...) {
+                cout << "Datele nu au putut fi validate. Va rugam reluati procesul.";
+                continue;
             }
-            cout << "Introduceti codul de reducere:\n20% rezervare in ultima zi___ 1\n50% student___ 2\n100% elev___ 3\nnu se aplica nicio reducere___0\n";
-            int cod_r;
-            cin >> cod_r;
-            r->modif_rez(cat_noua, loc);
-            cout << "Rezervare modificata.\n";
-            r->display_info_rez();
         }
         else if(opt == 6) {
             lista_rezervari.display_list();
             cout << "\nIntroduceti cod rezervare\n";
             int i_rez;
             cin >> i_rez;
-            lista_rezervari.sterge_rez(i_rez);
-            cout << "Rezervare anulata.\n";
+            try {
+                try {
+                    verifica_int(i_rez);
+                    Rezervare::verifica_valabilitate(i_rez);
+                }
+                catch (const wrongType& exceptie) {
+                    cout << "\nVa rugam ca data viitoare sa introduceti date compatibile.\n";
+                    throw (wrongInput("Nu au fost introduse date compatibile.\n"));
+                }
+                catch (const wrongInput& exceptie) {
+                    cout << "\nVa rugam ca data viitoare sa introduceti date valide.\n";
+                    throw;
+                }
+                lista_rezervari.sterge_rez(i_rez);
+                cout << "Rezervare anulata.\n";
+            }
+            catch(...) {
+                cout << "Datele nu au putut fi validate. Va rugam reluati procesul.";
+                continue;
+            }
         }
         else if(opt == 7) {
             cout << "in loc de spatiu, folositi _\n";
@@ -154,7 +221,6 @@ int main() {
             cin >> adresa;
             cout << "\nIntroduceti numarul de locuri din Categoria 1\n";
             int nr_C1;
-            cin >> nr_C1;
             cout << "\nIntroduceti numarul de locuri din Categoria 2\n";
             int nr_C2;
             cin >> nr_C2;
@@ -162,10 +228,10 @@ int main() {
             int nr_C3;
             cin >> nr_C3;
             //crearea obiectului
-            Sala s(nume, adresa, nr_C1, nr_C2, nr_C3);
+            Sala *s = new Sala(nume, adresa, nr_C1, nr_C2, nr_C3);
             cout << "Sala a fost introdusa in aplicatie.\n";
-            s.display();
-            cout << "\nVreti sa efectuati vrei modificare? da (1) sau nu (0)\n";
+            s->display();
+            cout << "\nVreti sa efectuati vreo modificare? da (1) sau nu (0)\n";
             int modif;
             cin >> modif;
             if (modif == 1) {
@@ -174,30 +240,30 @@ int main() {
                 if(modif == 1) {
                     cout << "\nIntroduceti numele salii\n";
                     cin >> nume;
-                    s.set_nume(nume);
+                    s->set_nume(nume);
                 }
                 else if(modif == 2) {
                     cout << "\nIntroduceti adresa\n";
                     cin >> adresa;
-                    s.set_adresa(adresa);
+                    s->set_adresa(adresa);
                 }
                 else if(modif == 3) {
                     cout << "\nIntroduceti numarul de locuri din Categoria 1\n";
                     cin >> nr_C1;
-                    s.set_C1(nr_C1);
+                    s->set_C1(nr_C1);
                 }
                 else if(modif == 4) {
                     cout << "\nIntroduceti numarul de locuri din Categoria 2\n";
                     cin >> nr_C2;
-                    s.set_C2(nr_C2);
+                    s->set_C2(nr_C2);
                 }
                 else if(modif == 5) {
                     cout << "\nIntroduceti numarul de locuri din Categoria 3\n";
                     cin >> nr_C3;
-                    s.set_C3(nr_C3);
+                    s->set_C3(nr_C3);
                 }
                 cout << "Modificarea a fost efectuata.\n";
-                s.display();
+                s->display();
             }
         }
         else if(opt == 8) {
@@ -233,10 +299,10 @@ int main() {
             int mp;
             cin >> mp;
             //crearea obiectului
-            Piesa_teatru p(nume, a, r, d, c, m, od, md, op, mp);
+            Piesa_teatru *p = new Piesa_teatru(nume, a, r, d, c, m, od, md, op, mp);
             cout << "Piesa a fost introdusa in aplicatie\n";
-            p.piesa_display();
-            cout << "\nVreti sa efectuati vrei modificare? da (1) sau nu (0)\n";
+            p->display();
+            cout << "\nVreti sa efectuati vreo modificare? da (1) sau nu (0)\n";
             int modif;
             cin >> modif;
             if (modif == 1) {
@@ -245,15 +311,15 @@ int main() {
                 if(modif == 1) {
                     cout << "\nIntroduceti numele piesei\n";
                     cin >> nume;
-                    p.set_nume(nume);
+                    p->set_nume(nume);
                 }
                 else if(modif == 2) {
                     cout << "\nIntroduceti numele autorului\n";
                     cin >> a;
-                    p.set_autor(a);
+                    p->set_autor(a);
                 }
                 cout << "Modificarea a fost efectuata.\n";
-                p.piesa_display();
+                p->display();
             }
         }
         else {

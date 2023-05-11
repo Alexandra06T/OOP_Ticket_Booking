@@ -55,6 +55,12 @@ build CMakeFiles/Ticket_Booking.dir/main.cpp.obj: CXX_COMPILER__Ticket_Booking_D
   OBJECT_DIR = CMakeFiles\Ticket_Booking.dir
   OBJECT_FILE_DIR = CMakeFiles\Ticket_Booking.dir
 
+build CMakeFiles/Ticket_Booking.dir/methods.cpp.obj: CXX_COMPILER__Ticket_Booking_Debug C$:/IT_projects/POO/Ticket_Booking/methods.cpp || cmake_object_order_depends_target_Ticket_Booking
+  DEP_FILE = CMakeFiles\Ticket_Booking.dir\methods.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Ticket_Booking.dir
+  OBJECT_FILE_DIR = CMakeFiles\Ticket_Booking.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Ticket_Booking
@@ -63,7 +69,7 @@ build CMakeFiles/Ticket_Booking.dir/main.cpp.obj: CXX_COMPILER__Ticket_Booking_D
 #############################################
 # Link the executable Ticket_Booking.exe
 
-build Ticket_Booking.exe: CXX_EXECUTABLE_LINKER__Ticket_Booking_Debug CMakeFiles/Ticket_Booking.dir/main.cpp.obj
+build Ticket_Booking.exe: CXX_EXECUTABLE_LINKER__Ticket_Booking_Debug CMakeFiles/Ticket_Booking.dir/main.cpp.obj CMakeFiles/Ticket_Booking.dir/methods.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Ticket_Booking.dir
