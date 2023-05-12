@@ -3,13 +3,13 @@
 //
 #include "Classes.h"
 
-template <class T*>
-void display() {
-    for(auto it: vct) {
-        T ba = *it;
-        ba.display();
-    }
-}
+//template <class T*>
+//void display() {
+//    for(auto it: vct) {
+//        T ba = *it;
+//        ba.display();
+//    }
+//}
 
 //constructor neparametrizat
 String::String() {
@@ -263,20 +263,24 @@ bool operator != (Data const d1, Data const d2) {
     return false;
 }
 //getter an
-int Data::get_an() {
+int Data::get_an() const {
     return an;
 }
 //getter luna
-int Data::get_luna() {
+int Data::get_luna() const {
     return luna;
 }
 //getter zi
-int Data::get_zi() {
+int Data::get_zi() const {
     return zi;
 }
-//getter an
-int Data::get_ora() {
+//getter ora
+int Data::get_ora() const {
     return ora;
+}
+//getter ora
+int Data::get_minute() const {
+    return minut;
 }
 //constructor parametrizat Sala
 Sala::Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3): nume_sala(nume), adresa(adr), nr_locuri_C1(nr_C1), nr_locuri_C2(nr_C2), nr_locuri_C3(nr_C3)  {
@@ -1059,6 +1063,71 @@ void RezList::sterge_rez(int i) {
 RezList::~RezList() {
     delete first;
 }
+
+void IstoricRezervari::display() {
+    for(auto it: lista_rezervari) {
+        (*it).display_info_rez();
+    }
+}
+//adaugarea unei rezervari in lista
+void IstoricRezervari::add_rez(Rezervare *r) {
+    lista_rezervari.push_back(r);
+    sort(lista_rezervari.begin(), lista_rezervari.end(), [&](Rezervare* a, Rezervare* b) -> bool {
+        if (a->get_data().get_an() == b->get_data().get_an()) {
+            if(a->get_data().get_luna() == b->get_data().get_luna()) {
+                if(a->get_data().get_zi() == b->get_data().get_zi()) {
+                    return (a->get_data().get_ora() < b->get_data().get_ora());
+                }
+                else return (a->get_data().get_zi() < b->get_data().get_zi());
+            }
+            else return (a->get_data().get_luna() < b->get_data().get_luna());
+        }
+        else return (a->get_data().get_an() < b->get_data().get_an());
+    });
+}
+void IstoricRezervari::sterge_rez() {
+    lista_rezervari.pop_back();
+}
+//afisarea rezervarilor de la o anumita data
+void IstoricRezervari::get_by_date(Data d) {
+    vector<Rezervare*> copie(lista_rezervari.size());
+    copy_if(lista_rezervari.begin(), lista_rezervari.end(), copie.begin(), [=](Rezervare* r) -> bool{
+        return (d.get_minute() == r->get_data().get_minute() && d.get_ora() == r->get_data().get_ora() && d.get_zi() == r->get_data().get_zi() && d.get_luna() == r->get_data().get_luna() && d.get_an() == r->get_data().get_an());
+    } );
+    if(copie.empty())
+    {
+        cout << "Nu s-au gasit rezervari pentru data de ";
+        d.data_display();
+    }
+    else{
+        for(auto it = copie.begin(); bool(*it); it++) {
+            Rezervare* r = *it;
+            r->get_repr()->display_info_repr();
+            cout << endl;
+        }
+    }
+}
+//afisarea rezervarilor la o anumite piesa
+void IstoricRezervari::get_by_piesa(const string &p) {
+    vector<Rezervare*> copie(lista_rezervari.size());
+    copy_if(lista_rezervari.begin(), lista_rezervari.end(), copie.begin(), [=](Rezervare* r) -> bool{
+        return (p ==r->get_repr()->get_piesa().get_nume());
+    } );
+    if(!(*copie.begin()))
+    {
+        cout << "Nu s-au gasit rezervari pentru piesa " << p << endl;
+    }
+    else{
+        for(auto it = copie.begin(); bool(*it); it++) {
+            Rezervare* r = *it;
+            r->get_repr()->display_info_repr();
+            cout << endl;
+        }
+    }
+}
+
+
+
 
 void verifica_int(double i) {
     if(int(i) != i)

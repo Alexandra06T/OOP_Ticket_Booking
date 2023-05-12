@@ -15,10 +15,10 @@ int main() {
     //balet
     Balet DonQuijote("Don Quijote", "Miguel de Cervantes", "Katerina Slavicka-Elslegrova", "Jaroslav Slavicky", "-", "-", 3, 30);
     Balet LaculLebedelor("Lacul Lebedelor", "Piotr Ilici Ceaikovski", "-", "Oleg Danovski", "Viorica Petrovici & Adrian Damian", "-", 3, 30);
-    MyVector v;
-    v.push_back(&LaculLebedelor);
-    v.push_back(&DonQuijote);
-    v.display();
+//    MyVector<Balet*> v;
+//    v.push_back(&LaculLebedelor);
+//    v.push_back(&DonQuijote);
+//    v.display();
     //sali
     Sala Mica("Sala Mica", "Bucuresti, Sector 1, Str. Mare, nr. 5", 20, 30, 40);
     Sala Amfiteatru("Sala Amfiteatru", "Bucuresti, Sector 1, Str. Mare, nr.6", 35, 45, 55);
@@ -57,9 +57,24 @@ int main() {
     lista_reprezentatii.add_repr(&RM18Mai);
     lista_reprezentatii.add_repr(&CCV12Mai);
     //rezervari
-//    Rezervare r1(&CCV12Mai, 1, 7, 1);
-//    Rezervare r2(&RM18Mai, 2, 23, 0);
-//    Rezervare r3(&TV5Mai, 3, 15, 2);
+    Rezervare r1(&CCV12Mai, 1, 7, 1);
+    Rezervare r2(&RM18Mai, 2, 23, 0);
+    Rezervare r3(&TV5Mai, 3, 15, 2);
+    IstoricRezervari ir;
+    ir.add_rez(&r1);
+    //ir.display();
+    //cout << endl;
+    ir.add_rez(&r2);
+    //ir.display();
+    //cout << endl;
+    ir.add_rez(&r3);
+    //ir.display();
+    //cout << endl;
+    Data d(19, 30, 5, 5, 2023);
+    ir.get_by_date(Data(19, 30, 5, 5, 2023));
+    cout << endl;
+    //ir.get_by_piesa("Titanic Vals");
+    cout << "aici" << endl;
     RezList lista_rezervari;
 //    lista_rezervari.add_rez(&r1);
 //    lista_rezervari.add_rez(&r2);

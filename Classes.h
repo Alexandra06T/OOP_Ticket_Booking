@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <algorithm>
 using namespace std;
 
 //exceptii
@@ -143,13 +144,15 @@ public:
     //supraincarcarea operatorului != pentru verificarea diferntei dintre doua zile
     friend bool operator != (Data const d1, Data const d2); //
     //getter an
-    int get_an();
+    int get_an() const;
     //getter luna
-    int get_luna();
+    int get_luna() const;
     //getter zi
-    int get_zi();
+    int get_zi() const;
     //getter ora
-    int get_ora();
+    int get_ora() const;
+    //getter minute
+    int get_minute() const;
 
 };
 class Sala {
@@ -477,31 +480,74 @@ public:
     //destructor
     ~RezList();
 };
-void verifica_int(double i);
-
-template <class Balet*>
-class MyVector: private vector<Balet*> {
-    vector<Balet*> vct;
-    typedef vector <Balet*> v;
+class IstoricRezervari: private Rezervare {
+    vector<Rezervare*> lista_rezervari;
 public:
-    using v::vector;
-    using v::at;
-    using v::end;
-    using v::begin;
-    using v::clear;
-    using v::empty;
-    using v::operator[];
-    using v::insert;
-    void push_back(Balet* b) {
-        int c = 0;
-        for(auto it : vct)
-        {
-            if(b->get_nume().compare(it->get_nume()) <= 0) {
-                break;
-            }
-            c++;
-        }
-        vct.insert(vct.begin() + c, b);
-    };
+    //afisare lista rezervari
     void display();
+    //adaugarea unei rezervari in lista
+    void add_rez(Rezervare *r);
+    //stergerea unei rezervari
+    void sterge_rez();
+    //afisarea rezervarilor de la o anumita data
+    void get_by_date(Data d);
+    //afisarea rezervarilor la o anumite piesa
+    void get_by_piesa(const string &p);
+
 };
+
+void verifica_int(double i);
+//
+//template <class T*>
+//class MyVector: private vector<T*> {
+//    vector<T*> vct;
+//    typedef vector <T*> v;
+//public:
+//    using v::vector;
+//    using v::at;
+//    using v::end;
+//    using v::begin;
+//    using v::clear;
+//    using v::empty;
+//    using v::operator[];
+//    using v::insert;
+//    void push_back(T* t) {
+//        int c = 0;
+//        for(auto it : vct)
+//        {
+//            if(t->get_nume().compare(it->get_nume()) <= 0) {
+//                break;
+//            }
+//            c++;
+//        }
+//        vct.insert(vct.begin() + c, t);
+//    };
+//    void display();
+//};
+//
+//template <>
+//class MyVector <Balet*>: private vector<Balet*> {
+//    vector<Balet*> vct;
+//    typedef vector <Balet*> v;
+//public:
+//    using v::vector;
+//    using v::at;
+//    using v::end;
+//    using v::begin;
+//    using v::clear;
+//    using v::empty;
+//    using v::operator[];
+//    using v::insert;
+//    void push_back(Balet* b) {
+//        int c = 0;
+//        for(auto it : vct)
+//        {
+//            if(b->get_nume().compare(it->get_nume()) <= 0) {
+//                break;
+//            }
+//            c++;
+//        }
+//        vct.insert(vct.begin() + c, b);
+//    };
+//    void display();
+//};
