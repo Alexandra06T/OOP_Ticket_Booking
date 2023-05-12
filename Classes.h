@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <memory>
 using namespace std;
 
 //exceptii
@@ -230,11 +231,13 @@ public:
     //afisare informatii despre o piesa de teatru
     void display();
     //getter nume piesa
-    string get_nume();
+    string get_nume() const;
     //setter nume piesa
     void set_nume(const string &nume);
     //setter nume autor
     void set_autor(const string &a);
+    //getter regie
+    string get_regie() const;
 
 };
 
@@ -495,59 +498,75 @@ public:
     void get_by_piesa(const string &p);
 
 };
+template <typename T>
+class EventManager {
+    vector <T*> ev;
+public:
+    void add_event(T* e) {
+        ev.push_back(e);
+    }
+    void del_event(T e) {
+        ev.pop_back();
+    }
+    void display() {
+        for(auto it: ev) {
+            it->display();
+        }
+    }
+};
+
+template <>
+class EventManager<Piesa_teatru*> {
+    vector<Piesa_teatru*> piese;
+public:
+    void add_event(Piesa_teatru* e) {
+        piese.push_back(e);
+    }
+    void del_event(Piesa_teatru* e) {
+        piese.pop_back();
+    }
+    void info_by_name(const string &s) {
+        vector<Piesa_teatru*> copie(piese.size());
+        copy_if(piese.begin(), piese.end(), copie.begin(), [=](Piesa_teatru* p) -> bool{
+            return (s == p->get_nume());
+        } );
+        if(!(*copie.begin()))
+        {
+            cout << "Nu s-au gasit informatii despre piesa " << s << endl;
+        }
+        else{
+            for(auto it = copie.begin(); bool(*it); it++) {
+                Piesa_teatru* p = *it;
+                p->display();
+                cout << endl;
+            }
+        }
+    }
+    void info_by_regie(const string &s) {
+        vector<Piesa_teatru*> copie(piese.size());
+        copy_if(piese.begin(), piese.end(), copie.begin(), [=](Piesa_teatru* p) -> bool{
+            return (s == p->get_regie());
+        } );
+        if(!(*copie.begin()))
+        {
+            cout << "Nu sunt informatii despre piesele in regia lui " << s << endl;
+        }
+        else{
+            for(auto it = copie.begin(); bool(*it); it++) {
+                Piesa_teatru* p = *it;
+                p->display();
+                cout << endl;
+            }
+        }
+    }
+    void display() {
+        for(auto it: piese) {
+            it->display();
+        }
+    }
+};
+
+
+
 
 void verifica_int(double i);
-//
-//template <class T*>
-//class MyVector: private vector<T*> {
-//    vector<T*> vct;
-//    typedef vector <T*> v;
-//public:
-//    using v::vector;
-//    using v::at;
-//    using v::end;
-//    using v::begin;
-//    using v::clear;
-//    using v::empty;
-//    using v::operator[];
-//    using v::insert;
-//    void push_back(T* t) {
-//        int c = 0;
-//        for(auto it : vct)
-//        {
-//            if(t->get_nume().compare(it->get_nume()) <= 0) {
-//                break;
-//            }
-//            c++;
-//        }
-//        vct.insert(vct.begin() + c, t);
-//    };
-//    void display();
-//};
-//
-//template <>
-//class MyVector <Balet*>: private vector<Balet*> {
-//    vector<Balet*> vct;
-//    typedef vector <Balet*> v;
-//public:
-//    using v::vector;
-//    using v::at;
-//    using v::end;
-//    using v::begin;
-//    using v::clear;
-//    using v::empty;
-//    using v::operator[];
-//    using v::insert;
-//    void push_back(Balet* b) {
-//        int c = 0;
-//        for(auto it : vct)
-//        {
-//            if(b->get_nume().compare(it->get_nume()) <= 0) {
-//                break;
-//            }
-//            c++;
-//        }
-//        vct.insert(vct.begin() + c, b);
-//    };
-//    void display();
-//};

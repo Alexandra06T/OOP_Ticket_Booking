@@ -385,7 +385,7 @@ void Piesa_teatru::display() {
     cout << "Durata: "; durata.durata_display();
     cout << "Pauza: "; pauza.durata_display();
 }
-string Piesa_teatru::get_nume() {
+string Piesa_teatru::get_nume() const{
     return nume_piesa;
 }
 //setter nume piesa
@@ -394,6 +394,10 @@ void Piesa_teatru::set_nume(const string &nume) {
 }
 void Piesa_teatru::set_autor(const string &a) {
     autor = a;
+}
+//getter regie
+string Piesa_teatru::get_regie() const {
+    return regie;
 }
 
 //constructor neparametrizat Categorie
@@ -1067,6 +1071,7 @@ RezList::~RezList() {
 void IstoricRezervari::display() {
     for(auto it: lista_rezervari) {
         (*it).display_info_rez();
+        cout << endl;
     }
 }
 //adaugarea unei rezervari in lista
@@ -1111,7 +1116,7 @@ void IstoricRezervari::get_by_date(Data d) {
 void IstoricRezervari::get_by_piesa(const string &p) {
     vector<Rezervare*> copie(lista_rezervari.size());
     copy_if(lista_rezervari.begin(), lista_rezervari.end(), copie.begin(), [=](Rezervare* r) -> bool{
-        return (p ==r->get_repr()->get_piesa().get_nume());
+        return (p == r->get_repr()->get_piesa().get_nume());
     } );
     if(!(*copie.begin()))
     {
@@ -1125,8 +1130,6 @@ void IstoricRezervari::get_by_piesa(const string &p) {
         }
     }
 }
-
-
 
 
 void verifica_int(double i) {
