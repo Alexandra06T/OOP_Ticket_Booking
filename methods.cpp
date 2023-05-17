@@ -38,7 +38,7 @@ String::String(String &sir) {
     pointer[lungime] = '\0';
 }
 //functie afisare
-void String::display() {
+void String::display() const{
     int i;
     for (i = 0; i < lungime; i++)
         cout << pointer[i];
@@ -59,15 +59,6 @@ void String::add_char(char c) {
     newpointer[lungime] = c;
     lungime++;
     newpointer[lungime] = '\0';
-    pointer = newpointer;
-}
-//concatenarea a doua stringuri
-void String::concat(const String sir) {
-    char* newpointer = new char[lungime+sir.lungime];
-    ::strncpy(newpointer, pointer, lungime);
-    ::strncpy(&newpointer[lungime], sir.pointer, sir.lungime);
-    lungime += sir.lungime;
-    pointer[lungime] = '\0';
     pointer = newpointer;
 }
 //gasirea unui substring intr-un string
@@ -223,9 +214,35 @@ void IntList::filter(int val) {
 //constructor neparametrizat
 Data::Data(): an(2023), luna(1), zi(1), ora(0), minut(0) {};
 //constructor Data pentru o data calendaristica
-Data::Data(int o, int m, int z = 1, int l = 1, int a = 2023): zi(z), luna(l), an(a), ora(o), minut(m) {};
+Data::Data(int o, int m, int z = 1, int l = 1, int a = 2023): zi(z), luna(l), an(a), ora(o), minut(m) {
+    if(l < 0) {
+        an = a - l / 12;
+        luna = 12 - (-l) % 12;
+    }
+    if (z >= -30 and z < 0) {
+        if(l == 1 || l==3 || l==7 || l==8 || l==10 || l==12) {
+            luna = l-1;
+            z = 31 + z;
+        }
+        else if( l == 2 ) {
+            if(an % 4 == 0) {
+                luna = l - 1;
+                z = 29 + z;
+            }
+            else {
+                luna = l - 1;
+                z = 28 + z;
+            }
+        }
+        else {
+            luna = l - 1;
+            z = z + 30;
+        }
+    }
 
-void Data::data_display() {
+};
+
+void Data::data_display() const{
     char l[4];
     if (luna == 1) strcpy(l,"Ian");
     else if(luna == 2) ::strcpy(l, "Feb");
@@ -243,21 +260,21 @@ void Data::data_display() {
     cout << zi << " " << l << " " << an << " ";
 }
 //afisare durata
-void Data::durata_display() {
+void Data::durata_display() const {
     if( ora == 0 && minut == 0)
         cout << "-\n";
     else
         cout << ora << " h " << minut << " min\n";
 }
 //afisare ora si minut
-void Data::display_ora_minut() {
+void Data::display_ora_minut() const{
     if(ora < 10) cout << 0;
     cout << ora << ":";
     if(minut < 10) cout << 0;
     cout << minut << " ";
 }
 //supraincarcarea operatorului != pentru verificarea diferntei dintre doua zile
-bool operator != (Data const d1, Data const d2) {
+bool operator != (Data const &d1, Data const &d2) {
     if (d1.zi != d2.zi || d1.luna != d2.luna || d1.an != d2.an)
         return true;
     return false;
@@ -289,7 +306,7 @@ Sala::Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3): 
 }
 
 //afiseaza informatii despre nume_sala si adresa
-void Sala::display() {
+void Sala::display() const{
     nume_sala.display();
     adresa.display();
     cout << "Numar total de locuri la Categoria 1: " << nr_locuri_C1 << endl;
@@ -297,7 +314,7 @@ void Sala::display() {
     cout << "Numar total de locuri la Categoria 3: " << nr_locuri_C3 << endl;
 }
 //getter nr_locuri_C1
-int Sala::get_C(int cat) {
+int Sala::get_C(int cat) const{
     if(cat == 1)
         return nr_locuri_C1;
     else if(cat == 2)
@@ -325,7 +342,7 @@ void Sala::set_C2(int nr_C2) {
 void Sala::set_C3(int nr_C3) {
     nr_locuri_C3 = nr_C3;
 }
-String Sala::get_nume_sala() {
+String Sala::get_nume_sala(){
     return nume_sala;
 }
 Sala::~Sala() {
@@ -352,11 +369,11 @@ Sala* Sala::get_i_sala(int i) {
 
 Balet::Balet(string nume, string a, string m, string co, string dc, string l, int ore, int min): nume_balet(nume), autor(a), maestru_de_repetitii(m), coregrafie(co), decor_costume(dc), lumini(l), durata(ore, min) {}
 
-string Balet::get_nume() {
+string Balet::get_nume() const{
     return nume_balet;
 }
 
-void Balet::display() {
+void Balet::display() const{
     cout << nume_balet << "\nde " << autor << endl;
     cout << "Maestru de repetitii: " << maestru_de_repetitii << endl;
     cout << "Coregrafie: " << coregrafie << endl;
@@ -376,7 +393,7 @@ Piesa_teatru::Piesa_teatru(string nume, string a, string r, string d, string c,
         muzica(m),
         pauza(op, mp) {};
 //afisare informatii despre o piesa de teatru
-void Piesa_teatru::display() {
+void Piesa_teatru::display() const{
     cout << nume_piesa << "\nde " << autor << endl;
     cout << "Regie: " << regie << endl;
     cout << "Decor: " << decor << endl;
@@ -403,10 +420,10 @@ string Piesa_teatru::get_regie() const {
 //constructor neparametrizat Categorie
 Categorie::Categorie(): pret(0), nr_locuri_rezervate(0), nr_locuri_disponibile(0), lista_locuri(), start_pret(Data()) {};
 //constructor parametrizat Categorie: la crearea unei categorii, toate locurile sunt disponibile
-Categorie::Categorie(float p, int d, int o, int m, int z , int l, int a): pret(p), nr_locuri_disponibile(d), nr_locuri_rezervate(0), lista_locuri(d, 0), start_pret(o, m, z, l, a)  {};
+Categorie::Categorie(float p, int d, int o, int m, int z , int l, int a): pret(p), nr_locuri_disponibile(d), nr_locuri_rezervate(0), lista_locuri(d, 0), start_pret(o, m, z, l-1, a)  {};
 
 //getter pret
-float Categorie::get_pret() {
+float Categorie::get_pret() const{
     return pret;
 }
 //setter pret
@@ -430,23 +447,23 @@ void Categorie::set_disponibil(int i) {
     nr_locuri_rezervate--;
 }
 //getter nr_locuri disponibile
-int Categorie::nr_disp() {
+int Categorie::nr_disp() const{
     return nr_locuri_disponibile;
 }
 //afiseaza lista locuri disponibile
 void Categorie::display_disponibil() {
     lista_locuri.filter(0);
 }
-float Categorie::pret_final() {
+float Categorie::pret_final() const{
     return pret;
 }
-void Categorie::change_start(int o, int m, int z , int l, int a) {
-    start_pret = Data(o, m, z, l, a);
-}
+//void Categorie::change_start(int o, int m, int z , int l, int a) {
+//    start_pret = Data(o, m, z, l, a);
+//}
 void Categorie::amana(int o, int m, int z, int l, int a) {
     start_pret = Data(o, m, z, l, a);
 }
-void Categorie::display_start_date() {
+void Categorie::display_start_date() const{
     cout << "Rezervarile cu pretul de " << pret_final() << " pot fi efectuate incepand cu data de ";
     start_pret.data_display();
 }
@@ -455,24 +472,23 @@ Data Categorie::get_start_pret() {
 }
 
 Oferta::Oferta(): procent(0), Categorie(), start_oferta(Data()) {}
-Oferta::Oferta(const float &pr, float p, int disp, int o, int m, int z , int l, int a): procent(pr), Categorie(p, disp, o, m, z, l, a), start_oferta(o, m, z, l, a){}
+Oferta::Oferta(const float &pr, float p, int disp, int o, int m, int z , int l, int a): procent(pr), Categorie(p, disp, o, m, z, l, a), start_oferta(o, m, z-7, l, a){}
 
-float Oferta::pret_final() {
+float Oferta::pret_final() const{
     return pret * (1 - procent);
 }
-float Oferta::get_procent() {
+float Oferta::get_procent() const {
     return procent;
 }
 void Oferta::amana(int o, int m, int z , int l, int a) {
     start_oferta = Data(o, m, z, l, a);
-    this -> change_start(o, m, z, l, a);
-    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
-    get_start_pret().data_display();
+//    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
+//    get_start_pret().data_display();
     cout << "\nPosibilitatea efectuarii de rezervari la oferta a fost amanata pentru data de ";
     start_oferta.data_display();
 }
 void Oferta::display_start_date() {
-    cout << "Rezervarile pot fi efectuate incepand cu data de ";
+    cout << "Rezervarile cu pretul de " << get_pret() << " pot fi efectuate incepand cu data de ";
     get_start_pret().data_display();
     cout << endl;
     cout << "Rezervarile la oferta cu pretul de " << pret_final() << " pot fi efectuate incepand cu data de ";
@@ -484,19 +500,18 @@ Reducere_last_day::Reducere_last_day(bool ld, float p, int disp, int o, int m, i
 void Reducere_last_day::set_last_day(bool ld) {
     last_day = ld;
 }
-float Reducere_last_day::procent_ld() {
+float Reducere_last_day::procent_ld() const{
     if(last_day)
         return 0.2;
     return 0;
 }
-float Reducere_last_day::pret_final() {
+float Reducere_last_day::pret_final() const{
     return pret * (1 - procent_ld());
 }
 void Reducere_last_day::amana(int o, int m, int z , int l, int a) {
-    this->change_start(o, m, z, l, a);
     start_reducere = Data(o, m, z-1, l, a);
-    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
-    get_start_pret().data_display();
+//    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
+//    get_start_pret().data_display();
     cout << "\nPosibilitatea efectuarii de rezervari la reducere a fost amanata pentru data de ";
     start_reducere.data_display();
     cout << endl;
@@ -509,28 +524,27 @@ void Reducere_last_day::display_start_date() {
     start_reducere.data_display();
     cout << endl;
 }
-float Reducere_dubla::pret_final() {
+float Reducere_dubla::pret_final() const{
     return get_pret() * (1 - Reducere_last_day::procent_ld() - get_procent());
 }
-Reducere_dubla::Reducere_dubla():Categorie() {}
+
 Reducere_dubla::Reducere_dubla(const float& pr, bool ld,float p, int disp, int o, int m, int z , int l, int a): start_rd(o, m, z, l, a), Categorie(p, disp, o, m, z, l, a) {
     start_reducere = Data(o, m, z-1, l, a);
-    start_oferta = Data(o, m, z, l, a);
+    start_oferta = Data(o, m, z-7, l, a);
 }
 
 //start ul aplicarii pretului este data cea mai recenta intre cea a aplicarii ofertei si cea a aplicarii reducerii ld, nu modifica start ul aplicarii pretului categoriei
-void Reducere_dubla::change_start() {
-    if(start_oferta.get_ora() >= start_reducere.get_ora())
-        start_rd = start_oferta;
-    else start_rd = start_reducere;
-
-}
+//void Reducere_dubla::change_start() {
+//    if(start_oferta.get_ora() >= start_reducere.get_ora())
+//        start_rd = start_oferta;
+//    else start_rd = start_reducere;
+//
+//}
 void Reducere_dubla::amana(int o, int m, int z, int l, int a) {
     start_reducere = Data(o, m, z-1, l, a);
     start_oferta = Data(o, m, z, l, a);
-    change_start();
-    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
-    get_start_pret().data_display();
+//    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
+//    get_start_pret().data_display();
     cout << "\nPosibilitatea efectuarii de rezervari la reducere dubla a fost amanata pentru data de ";
     start_rd.data_display();
     cout << endl;
@@ -566,25 +580,25 @@ Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a
         C2 = new Reducere_dubla(pr, true,p2, sl->get_C(2), o, m, z, l, a);
         C3 = new Reducere_dubla(pr, true,p3, sl->get_C(3), o, m, z, l, a);
         //setam data de start conform regulii clasei Reducere_dubla
-        if(dynamic_cast <Reducere_dubla*> (C1) == nullptr) cout << "Nu a reusit";
-        (dynamic_cast <Reducere_dubla*> (C1))->change_start();
-        (dynamic_cast <Reducere_dubla*> (C2))->change_start();
-        (dynamic_cast <Reducere_dubla*> (C3))->change_start();
+//        if(dynamic_cast <Reducere_dubla*> (C1) == nullptr) cout << "Nu a reusit";
+//        (dynamic_cast <Reducere_dubla*> (C1))->change_start();
+//        (dynamic_cast <Reducere_dubla*> (C2))->change_start();
+//        (dynamic_cast <Reducere_dubla*> (C3))->change_start();
     }
 }
 
 //afisarea detaliilor unei reprezentatii
-void Reprezentatie::display_info_repr() {
+void Reprezentatie::display_info_repr() const{
     cout << piesa->get_nume() << "   ";
     data_repr.display_ora_minut();
     cout <<  s->get_nume_sala() << "   Numar locuri disponibile " << total_disp() << " ";
 }
 //getter data
-Data Reprezentatie::get_data() {
+Data Reprezentatie::get_data() const{
     return data_repr;
 }
 //getter pret
-float Reprezentatie::get_pret(int categorie, int cod) {
+float Reprezentatie::get_pret(int categorie, int cod) const{
     if(cod == 1) return 0;
     if(cod == 0) {
         if (categorie == 1) {
@@ -606,15 +620,15 @@ float Reprezentatie::get_pret(int categorie, int cod) {
     }
 }
 //getter piesa
-Piesa_teatru Reprezentatie::get_piesa() {
+Piesa_teatru Reprezentatie::get_piesa() const{
     return *piesa;
 }
 //getter sala
-Sala Reprezentatie::get_sala() {
+Sala Reprezentatie::get_sala() const {
     return *s;
 }
 //getter cat
-Categorie* Reprezentatie::get_cat(int i) {
+Categorie* Reprezentatie::get_cat(int i) const{
     if(i == 1)
         return C1;
     else if(i == 2)
@@ -622,9 +636,21 @@ Categorie* Reprezentatie::get_cat(int i) {
     else
         return C3;
 }
+//setter categorie
+void Reprezentatie::set_cat(int i, Categorie* c) {
+    if(i == 1) {
+        C1 = c;
+    }
+    else if(i == 2) {
+        C2 = c;
+    }
+    else {
+        C3 = c;
+    }
+}
 
 //calculeaza numarul total de locuri disponibile pentru o reprezentatie
-int Reprezentatie::total_disp() {
+int Reprezentatie::total_disp() const {
     return C1->nr_disp() + C2->nr_disp() + C3->nr_disp();
 }
 //rezerva loc
@@ -839,19 +865,19 @@ Rezervare::~Rezervare() {
     nr_rezervari--;
 }
 //getter data
-Data Rezervare::get_data() {
+Data Rezervare::get_data() const{
     return reprezentatie->get_data();
 }
 //getter reprezentatie
-Reprezentatie* Rezervare::get_repr() {
+Reprezentatie* Rezervare::get_repr() const{
     return reprezentatie;
 }
 //getter categorie
-int Rezervare::get_nr_cat() {
+int Rezervare::get_nr_cat() const{
     return categorie;
 }
 //getter loc
-int Rezervare::get_nr_loc() {
+int Rezervare::get_nr_loc() const{
     return loc;
 }
 //afisare informatii rezervare
@@ -1094,7 +1120,7 @@ void IstoricRezervari::sterge_rez() {
     lista_rezervari.pop_back();
 }
 //afisarea rezervarilor de la o anumita data
-void IstoricRezervari::get_by_date(Data d) {
+void IstoricRezervari::get_by_date(const Data &d) {
     vector<Rezervare*> copie(lista_rezervari.size());
     copy_if(lista_rezervari.begin(), lista_rezervari.end(), copie.begin(), [=](Rezervare* r) -> bool{
         return (d.get_minute() == r->get_data().get_minute() && d.get_ora() == r->get_data().get_ora() && d.get_zi() == r->get_data().get_zi() && d.get_luna() == r->get_data().get_luna() && d.get_an() == r->get_data().get_an());
@@ -1131,8 +1157,104 @@ void IstoricRezervari::get_by_piesa(const string &p) {
     }
 }
 
+Cladire::Cladire(const string &d): denumire(d) {}
+
+void Cladire::add_part(const string &p) {
+    parti.push_back(p);
+}
+
+void Cladire::display() {
+    cout << denumire << endl;
+    for( auto it = parti.begin(); it != parti.end(); it ++) {
+        cout << " - " << *it << " : ";
+        it++;
+        cout << *it << endl;
+    }
+}
+
+void Cladire::set_denumire(const string &s) {
+    denumire = s;
+}
+
+ConcreteBuilder::ConcreteBuilder(){
+    reset();
+}
+
+ConcreteBuilder::~ConcreteBuilder(){
+    delete cladire;
+}
+
+void ConcreteBuilder::reset(){
+    cladire = new Cladire();
+}
+
+void ConcreteBuilder::set_denumire(const string &s) {
+    cladire->set_denumire(s);
+}
+
+void ConcreteBuilder::produceGradinaDeVara() const {
+    cladire->add_part("Gradina de Vara");
+    cladire->add_part("Amfiteatru in aer liber pentru reprezentatii pe durata verii.");
+}
+
+void ConcreteBuilder::produceSala() const {
+    cladire->add_part("Sala inchisa");
+    cladire->add_part("Spatiu de joc cu scena larga. Locurile sunt structurate pe trei categorii, in functie de vizibilitate si confort.");
+}
+
+void ConcreteBuilder::produceCafenea() const {
+    cladire->add_part("Cafenea");
+    cladire->add_part("Spatiu in care se pot derula proiecte diverese, trandisciplinare.");
+}
+
+Cladire* ConcreteBuilder::GetCladire() {
+    Cladire* result = cladire;
+    reset();
+    return result;
+}
+void Director::set_builder(Builder* b){
+    builder = b;
+}
+void Director::BuildCladireMica() {
+    builder->set_denumire("Cladire Mica");
+    builder->produceSala();
+}
+void Director::BuildCladireMedie() {
+    builder->set_denumire("Cladire Medie");
+    builder->produceSala();
+    builder->produceCafenea();
+}
+void Director::BuildCladireMare() {
+    builder->set_denumire("Cladire Mare");
+    builder->produceSala();
+    builder->produceCafenea();
+    builder->produceGradinaDeVara();
+}
 
 void verifica_int(double i) {
     if(int(i) != i)
         throw (wrongType("Numarul introdus nu este intreg."));
 }
+//void get_oferte (vector<Reprezentatie*> v) {
+//    for (auto it: v) {
+//        if(dynamic_cast<Oferta*> (it->get_cat(1)) != nullptr) {
+//            it->display_info_repr();
+//            cout << endl;
+//            cout << "Categoria 1 " << it->get_pret(1,0) << endl;
+//            cout << "Categoria 2 " << it->get_pret(2,0) << endl;
+//            cout << "Categoria 3 " << it->get_pret(3,0) << endl;
+//        }
+//    }
+//}
+//template <class T>
+//void get_oferte (vector<Reprezentatie*> v) {
+//    for (auto it: v) {
+//        if(dynamic_cast<T*> (it->get_cat(1)) != nullptr) {
+//            it->display_info_repr();
+//            cout << endl;
+//            cout << "Categoria 1 " << it->get_pret(1,0) << endl;
+//            cout << "Categoria 2 " << it->get_pret(2,0) << endl;
+//            cout << "Categoria 3 " << it->get_pret(3,0) << endl;
+//        }
+//    }
+//}

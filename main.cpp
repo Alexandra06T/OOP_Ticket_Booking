@@ -50,6 +50,37 @@ int main() {
     s.add_event(&Amfiteatru);
     s.add_event(&Mare);
     s.display();
+
+    //Testare builder
+    cout << "\nTestare builder\n\n";
+    ConcreteBuilder* builder = new ConcreteBuilder();
+    Director* director= new Director();
+    director->set_builder(builder);
+    cout << "Construim o cladire mica:\n";
+    director->BuildCladireMica();
+
+    Cladire* c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    std::cout << "\nConstruim o cladire mare:\n";
+    director->BuildCladireMare();
+
+    c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    cout << "\nConstruim o cladire doar pentru vara cu gradina si cafenea:\n";
+    builder->set_denumire("Cladire personalizata");
+    builder->produceGradinaDeVara();
+    builder->produceCafenea();
+    c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    delete builder;
+
+
     //reprezentatii
     int nr_repr = 7;
     Reprezentatie CD5Mai(&CeiDrepti, 19, 30, 5, 5, 2023, &Mare, 100, 80, 50, 0, 0);
@@ -63,13 +94,14 @@ int main() {
     cout << "\nTestare clase mostenire multipla\nAmanam o reprezentatie cu oferta\n";
     CD12Mai.get_cat(1)->display_start_date();
     CD12Mai.get_cat(1)->amana(20, 0, 13, 5, 2023);
+    cout << endl;
     CD12Mai.get_cat(1)->display_start_date();
-    cout << "\namanam o reprezentatie cu reducere de ultima zi\n";
+    cout << "\n\namanam o reprezentatie cu reducere de ultima zi\n";
     // amanam o reprezentatie cu reducere de ultima zi
     TV5Mai.get_cat(1)->display_start_date();
     TV5Mai.get_cat(1)->amana(19, 30, 8, 5, 2023);
     TV5Mai.get_cat(1)->display_start_date();
-    cout << "\namanam o reprezentatie cu reducere dubla\n";
+    cout << "\n\namanam o reprezentatie cu reducere dubla\n";
     // amanam o reprezentatie cu reducere dubla
     TV20Mai.get_cat(1)->display_start_date();
     TV20Mai.get_cat(1)->amana(20, 0, 25, 5, 2023);
@@ -84,12 +116,26 @@ int main() {
     lista_reprezentatii.add_repr(&CS12Mai);
     lista_reprezentatii.add_repr(&RM18Mai);
     lista_reprezentatii.add_repr(&CCV12Mai);
+
+
+    vector<Reprezentatie*> reprlist;
+    reprlist.push_back(&CD12Mai);
+    reprlist.push_back(&CD5Mai);
+    reprlist.push_back(&TV5Mai);
+    reprlist.push_back(&TV20Mai);
+    reprlist.push_back(&CS12Mai);
+    reprlist.push_back(&RM18Mai);
+    reprlist.push_back(&CCV12Mai);
+    cout << "\nOferte\n";
+    get_oferte<Oferta>(reprlist);
+
+
     //rezervari
     Rezervare r1(&CCV12Mai, 1, 7, 1);
     Rezervare r2(&RM18Mai, 2, 23, 0);
     Rezervare r3(&TV5Mai, 3, 15, 2);
     //istoric rezervari - clasa care mosteneste privat Rezervare
-    cout << "Testare IstoricRezervari - clasa care mosteneste privat Rezervare\n";
+    cout << "\nTestare IstoricRezervari - clasa care mosteneste privat Rezervare\n";
     IstoricRezervari ir;
     ir.add_rez(&r1);
     //ir.display();
@@ -100,10 +146,10 @@ int main() {
     ir.add_rez(&r3);
     ir.display();
     cout << "\nafisarea rezervarilor pentru o data anume\n";
-    Data d(19, 30, 5, 5, 2023);
     ir.get_by_date(Data(19, 30, 5, 5, 2023));
     cout << "\nafisarea rezervarilor pentru o anumita piesa\n";
     ir.get_by_piesa("Titanic Vals");
+
     RezList lista_rezervari;
 //    lista_rezervari.add_rez(&r1);
 //    lista_rezervari.add_rez(&r2);
