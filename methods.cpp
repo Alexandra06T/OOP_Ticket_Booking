@@ -3,13 +3,6 @@
 //
 #include "Classes.h"
 
-//template <class T*>
-//void display() {
-//    for(auto it: vct) {
-//        T ba = *it;
-//        ba.display();
-//    }
-//}
 
 //constructor neparametrizat
 String::String() {
@@ -457,13 +450,10 @@ void Categorie::display_disponibil() {
 float Categorie::pret_final() const{
     return pret;
 }
-//void Categorie::change_start(int o, int m, int z , int l, int a) {
-//    start_pret = Data(o, m, z, l, a);
-//}
 void Categorie::amana(int o, int m, int z, int l, int a) {
     start_pret = Data(o, m, z, l, a);
 }
-void Categorie::display_start_date() const{
+void Categorie::display_start_date() {
     cout << "Rezervarile cu pretul de " << pret_final() << " pot fi efectuate incepand cu data de ";
     start_pret.data_display();
 }
@@ -510,8 +500,6 @@ float Reducere_last_day::pret_final() const{
 }
 void Reducere_last_day::amana(int o, int m, int z , int l, int a) {
     start_reducere = Data(o, m, z-1, l, a);
-//    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
-//    get_start_pret().data_display();
     cout << "\nPosibilitatea efectuarii de rezervari la reducere a fost amanata pentru data de ";
     start_reducere.data_display();
     cout << endl;
@@ -533,18 +521,9 @@ Reducere_dubla::Reducere_dubla(const float& pr, bool ld,float p, int disp, int o
     start_oferta = Data(o, m, z-7, l, a);
 }
 
-//start ul aplicarii pretului este data cea mai recenta intre cea a aplicarii ofertei si cea a aplicarii reducerii ld, nu modifica start ul aplicarii pretului categoriei
-//void Reducere_dubla::change_start() {
-//    if(start_oferta.get_ora() >= start_reducere.get_ora())
-//        start_rd = start_oferta;
-//    else start_rd = start_reducere;
-//
-//}
 void Reducere_dubla::amana(int o, int m, int z, int l, int a) {
     start_reducere = Data(o, m, z-1, l, a);
     start_oferta = Data(o, m, z, l, a);
-//    cout << "Posibilitatea efectuarii de rezervari a fost amanata pentru data de ";
-//    get_start_pret().data_display();
     cout << "\nPosibilitatea efectuarii de rezervari la reducere dubla a fost amanata pentru data de ";
     start_rd.data_display();
     cout << endl;
@@ -579,11 +558,6 @@ Reprezentatie::Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a
         C1 = new Reducere_dubla(pr, true, p1, sl->get_C(1), o, m, z, l, a);
         C2 = new Reducere_dubla(pr, true,p2, sl->get_C(2), o, m, z, l, a);
         C3 = new Reducere_dubla(pr, true,p3, sl->get_C(3), o, m, z, l, a);
-        //setam data de start conform regulii clasei Reducere_dubla
-//        if(dynamic_cast <Reducere_dubla*> (C1) == nullptr) cout << "Nu a reusit";
-//        (dynamic_cast <Reducere_dubla*> (C1))->change_start();
-//        (dynamic_cast <Reducere_dubla*> (C2))->change_start();
-//        (dynamic_cast <Reducere_dubla*> (C3))->change_start();
     }
 }
 
@@ -1235,26 +1209,3 @@ void verifica_int(double i) {
     if(int(i) != i)
         throw (wrongType("Numarul introdus nu este intreg."));
 }
-//void get_oferte (vector<Reprezentatie*> v) {
-//    for (auto it: v) {
-//        if(dynamic_cast<Oferta*> (it->get_cat(1)) != nullptr) {
-//            it->display_info_repr();
-//            cout << endl;
-//            cout << "Categoria 1 " << it->get_pret(1,0) << endl;
-//            cout << "Categoria 2 " << it->get_pret(2,0) << endl;
-//            cout << "Categoria 3 " << it->get_pret(3,0) << endl;
-//        }
-//    }
-//}
-//template <class T>
-//void get_oferte (vector<Reprezentatie*> v) {
-//    for (auto it: v) {
-//        if(dynamic_cast<T*> (it->get_cat(1)) != nullptr) {
-//            it->display_info_repr();
-//            cout << endl;
-//            cout << "Categoria 1 " << it->get_pret(1,0) << endl;
-//            cout << "Categoria 2 " << it->get_pret(2,0) << endl;
-//            cout << "Categoria 3 " << it->get_pret(3,0) << endl;
-//        }
-//    }
-//}

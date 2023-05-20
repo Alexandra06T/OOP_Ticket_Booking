@@ -210,7 +210,6 @@ public:
     Balet(string nume, string a, string m, string co, string dc, string l, int ore, int min);
     string get_nume() const;
     void display() const;
-    //de implementat constructor restul functiilor, de gasit legatura intre ele, de modif la rezervare cu ev, de pus static, de pus in meniu interactiv, de sters utilizatori
 };
 
 class Piesa_teatru {
@@ -247,7 +246,7 @@ class Categorie {
     Data start_pret;
 protected:
     float pret;
-//    virtual void change_start(int o, int m, int z , int l, int a);
+
 public:
     //constructor neparametrizat Categorie
     Categorie();
@@ -269,7 +268,7 @@ public:
     virtual float pret_final() const;
     virtual ~Categorie() = default;
     virtual void amana(int o, int m, int z , int l, int a);
-    virtual void display_start_date() const;
+    virtual void display_start_date();
     Data get_start_pret();
 
 };
