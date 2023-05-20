@@ -89,3 +89,57 @@ Clasa pentru gestionarea rezervarilor utilizatorului. Fiecare obiect de tip Reze
 ### Clasa RezList
 
 Clasa pentru liste simplu inlantuite de obiecte de tip Rezervare, retinute in ordine cronologica.
+
+## Cerinta 2
+
+### Mostenire
+
+Eveniment: Piesa_teatru, Balet
+Categorie: Oferta, Reducere_last_day : Reducere dubla - mostenire multipla, in diamant
+Rezervare: IstoricRezervari - mostenire privata
+de ex: Oferta - apeleaza constructorul cu parametri de la Categorie
+date protected: pret din Categorie, start_oferta din Oferta, etc. - accesate de clasele care le mostenesc
+
+### Interfete si metode virtuale
+
+Eveniment - interfata, clasa abstracta : get_nume, display
+In Reprezentatie: ptr de tipul Categorie care face referire la un obiect alocat dinamic din clasele Oferta, etc - destructor
+pret_final, amana, etc metode virtuale suprascrise
+
+### Polimorfism la executie
+
+amanam, display_start_date - dynamic dispatch
+La Reprezentatie, Oferta, Reducere_last_day, etc in pointer de tip Categorie - upcasting
+get_oferte - downcast cu dynamic_cast
+
+### Exceptii
+
+wrongType, wrongInput
+5 - modifica rezervarea: verifica_int, verifica_valabilitate + try catch x 2
+
+### Variabile si metode statice
+
+Sali: vector cu sali si nr de sali + metode
+Reprezentatie: nr_reprezentatii
+Rezervare: nr_rezervari + metode
+
+### lambda 
+
+EventManager: info_by_name, info_by_regie
+
+## Cerinta 3
+
+### Programare generica
+
+EventManager - template generic, template specializat pt piese de teatru
+get_oferte - functie sablon
+
+### Design patterns
+
+builder pt Cladire
+
+### Biblioteca standard
+
+vector, string
+
+copy_if, sort - IstoricRezervari

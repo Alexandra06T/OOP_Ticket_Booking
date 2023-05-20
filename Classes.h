@@ -1,12 +1,13 @@
 #ifndef TICKET_BOOKING_CLASSES_H
 #define TICKET_BOOKING_CLASSES_H
 
-#endif //TICKET_BOOKING_CLASSES_H
 
 #include <cstring>
 #include <iostream>
 #include <vector>
 #include <list>
+#include <algorithm>
+#include <memory>
 using namespace std;
 
 //exceptii
@@ -49,11 +50,9 @@ public:
         return *this;
     }
     //functie afisare
-    void display();
+    void display() const;
     //adaugarea unui caracter la finalul stringului
     void add_char(char c);
-    //concatenarea a doua stringuri
-    void concat(String sir); //nullptr
     //gasirea unui substring intr-un string
     char* find_substr(const char* subsir);
     //supraincarcarea operatorului <<
@@ -135,21 +134,23 @@ public:
     //constructor Data pentru o data calendaristica
     Data(int o, int m, int z, int l, int a);
     //afisare data calendaristica
-    void data_display();
+    void data_display() const;
     //afisare durata
-    void durata_display();
+    void durata_display() const;
     //afisare ora si minut
-    void display_ora_minut();
+    void display_ora_minut() const;
     //supraincarcarea operatorului != pentru verificarea diferntei dintre doua zile
-    friend bool operator != (Data const d1, Data const d2); //
+    friend bool operator != (Data const &d1, Data const &d2);
     //getter an
-    int get_an();
+    int get_an() const;
     //getter luna
-    int get_luna();
+    int get_luna() const;
     //getter zi
-    int get_zi();
+    int get_zi() const;
     //getter ora
-    int get_ora();
+    int get_ora() const;
+    //getter minute
+    int get_minute() const;
 
 };
 class Sala {
@@ -164,9 +165,9 @@ public:
     //constructor parametrizat Sala
     Sala(const char* nume, const char* adr, int nr_C1, int nr_C2, int nr_C3);
     //afiseaza informatii despre nume_sala si adresa
-    void display();
+    void display() const;
     //getter nr_locuri_C
-    int get_C(int cat);
+    int get_C(int cat) const;
     //setter nume_sala
     void set_nume(const char* nume);
     //setter adresa
@@ -192,8 +193,8 @@ public:
 
 class Eveniment {
 public:
-    virtual string get_nume() = 0;
-    virtual void display() = 0;
+    virtual string get_nume() const = 0;
+    virtual void display() const = 0;
     virtual ~Eveniment() = default;
 };
 
@@ -207,9 +208,8 @@ class Balet: public Eveniment {
     Data durata;
 public:
     Balet(string nume, string a, string m, string co, string dc, string l, int ore, int min);
-    string get_nume();
-    void display();
-    //de implementat constructor restul functiilor, de gasit legatura intre ele, de modif la rezervare cu ev, de pus static, de pus in meniu interactiv, de sters utilizatori
+    string get_nume() const;
+    void display() const;
 };
 
 class Piesa_teatru {
@@ -225,13 +225,15 @@ public:
     //constructor Piesa_teatru parametrizat
     Piesa_teatru(string nume, string a, string r, string d, string c, string m, int od, int md, int op = 0, int mp = 0);
     //afisare informatii despre o piesa de teatru
-    void display();
+    void display() const;
     //getter nume piesa
-    string get_nume();
+    string get_nume() const;
     //setter nume piesa
     void set_nume(const string &nume);
     //setter nume autor
     void set_autor(const string &a);
+    //getter regie
+    string get_regie() const;
 
 };
 
@@ -244,14 +246,14 @@ class Categorie {
     Data start_pret;
 protected:
     float pret;
-    virtual void change_start(int o, int m, int z , int l, int a);
+
 public:
     //constructor neparametrizat Categorie
     Categorie();
     //constructor parametrizat Categorie
     Categorie(float p, int d, int o, int m, int z , int l, int a );
     //getter pret
-    float get_pret();
+    float get_pret() const;
     //setter pret
     void set_pret(float pret_nou);
     //setter loc devine rezervat
@@ -259,11 +261,11 @@ public:
     //setter loc devine disponibil
     void set_disponibil(int i);
     //getter nr_locuri disponibile
-    int nr_disp();
+    int nr_disp() const;
     //afiseaza lista locuri disponibile
     void display_disponibil();
     //calculeaza pret, aplicand eventuale reduceri (0% (cod reducere 0), 100% elev (cod reducere 1), 50% student (cod reducere 2)
-    virtual float pret_final();
+    virtual float pret_final() const;
     virtual ~Categorie() = default;
     virtual void amana(int o, int m, int z , int l, int a);
     virtual void display_start_date();
@@ -278,8 +280,8 @@ protected:
 public:
     Oferta();
     Oferta(const float &pr, float p, int disp, int o, int m, int z , int l, int a);
-    float get_procent();
-    float pret_final();
+    float get_procent() const;
+    float pret_final() const;
     void amana(int o, int m, int z , int l, int a);
     void display_start_date();
 };
@@ -292,8 +294,8 @@ public:
     Reducere_last_day();
     Reducere_last_day(bool ld, float p, int disp, int o, int m, int z , int l, int a);
     void set_last_day(bool ld);
-    float procent_ld();
-    float pret_final();
+    float procent_ld() const;
+    float pret_final() const;
     void amana(int o, int m, int z , int l, int a);
     void display_start_date();
 };
@@ -301,8 +303,8 @@ public:
 class Reducere_dubla: public Oferta, public Reducere_last_day {
     Data start_rd;
 public:
-    float pret_final();
-    Reducere_dubla();
+    float pret_final() const;
+    Reducere_dubla() = default;
     Reducere_dubla(const float &pr, bool ld, float p, int disp,  int o , int m, int z , int l, int a);
     void change_start();
     void amana(int o, int m, int z , int l, int a);
@@ -323,19 +325,21 @@ public:
     //constructor parametrizat
     Reprezentatie(Piesa_teatru* p, int o, int m, int z , int l, int a, Sala* sl, float p1, float p2, float p3, int cod, float pr = 0);
     //afisarea detaliilor unei reprezentatii
-    void display_info_repr();
+    void display_info_repr() const;
     //getter data
-    Data get_data();
+    Data get_data() const;
     //getter pret
-    float get_pret(int categorie, int cod);
+    float get_pret(int categorie, int cod) const;
     //getter piesa
-    Piesa_teatru get_piesa();
+    Piesa_teatru get_piesa() const;
     //getter sala
-    Sala get_sala();
+    Sala get_sala() const;
     //getter cat
-    Categorie* get_cat(int i);
+    Categorie* get_cat(int i) const;
+    //setter categorie
+    void set_cat(int i, Categorie* c);
     //calculeaza numarul total de locuri disponibile pentru o reprezentatie
-    int total_disp();
+    int total_disp() const;
     //rezerva loc
     void rezerva(int cat, int loc);
     //modifica locul rezervat
@@ -407,13 +411,13 @@ public:
     //destructor
     ~Rezervare();
     //getter data
-    Data get_data();
+    Data get_data() const;
     //getter reprezentatie
-    Reprezentatie* get_repr();
+    Reprezentatie* get_repr()const ;
     //getter categorie
-    int get_nr_cat();
+    int get_nr_cat() const;
     //getter loc
-    int get_nr_loc();
+    int get_nr_loc() const;
     //afisare informatii rezervare
     void display_info_rez();
     //modifica loc rezervare
@@ -477,32 +481,148 @@ public:
     //destructor
     ~RezList();
 };
+class IstoricRezervari: private Rezervare {
+    vector<Rezervare*> lista_rezervari;
+public:
+    //afisare lista rezervari
+    void display();
+    //adaugarea unei rezervari in lista
+    void add_rez(Rezervare *r);
+    //stergerea unei rezervari
+    void sterge_rez();
+    //afisarea rezervarilor de la o anumita data
+    void get_by_date(const Data &d) ;
+    //afisarea rezervarilor la o anumite piesa
+    void get_by_piesa(const string &p);
+
+};
+template <typename T>
+class EventManager {
+    vector <T*> ev;
+public:
+    void add_event(T* e) {
+        ev.push_back(e);
+    }
+    void del_event(T e) {
+        ev.pop_back();
+    }
+    void display() {
+        for(auto it: ev) {
+            it->display();
+        }
+    }
+};
+
+template <>
+class EventManager<Piesa_teatru*> {
+    vector<Piesa_teatru*> piese;
+public:
+    void add_event(Piesa_teatru* e) {
+        piese.push_back(e);
+    }
+    void del_event(Piesa_teatru* e) {
+        piese.pop_back();
+    }
+    void info_by_name(const string &s) {
+        vector<Piesa_teatru*> copie(piese.size());
+        copy_if(piese.begin(), piese.end(), copie.begin(), [=](Piesa_teatru* p) -> bool{
+            return (s == p->get_nume());
+        } );
+        if(!(*copie.begin()))
+        {
+            cout << "Nu s-au gasit informatii despre piesa " << s << endl;
+        }
+        else{
+            for(auto it = copie.begin(); bool(*it); it++) {
+                Piesa_teatru* p = *it;
+                p->display();
+                cout << endl;
+            }
+        }
+    }
+    void info_by_regie(const string &s) {
+        vector<Piesa_teatru*> copie(piese.size());
+        copy_if(piese.begin(), piese.end(), copie.begin(), [=](Piesa_teatru* p) -> bool{
+            return (s == p->get_regie());
+        } );
+        if(!(*copie.begin()))
+        {
+            cout << "Nu sunt informatii despre piesele in regia lui " << s << endl;
+        }
+        else{
+            for(auto it = copie.begin(); bool(*it); it++) {
+                Piesa_teatru* p = *it;
+                p->display();
+                cout << endl;
+            }
+        }
+    }
+    void display() {
+        for(auto it: piese) {
+            it->display();
+        }
+    }
+};
+
+class Cladire {
+    vector<string>parti;
+    string denumire;
+public:
+    void display();
+    Cladire() = default;
+    Cladire(const string &d);
+    void add_part(const string &p);
+    void set_denumire(const string &s);
+};
+
+class Builder {
+public:
+    virtual ~Builder() = default;
+    virtual void set_denumire(const string &s) = 0;
+    virtual void produceGradinaDeVara() const = 0;
+    virtual void produceSala() const = 0;
+    virtual void produceCafenea() const = 0;
+};
+
+class ConcreteBuilder: public Builder{
+    Cladire* cladire;
+public:
+    ConcreteBuilder();
+    ~ConcreteBuilder();
+    void reset();
+    void set_denumire(const string &s) override;
+    void produceGradinaDeVara() const override;
+    void produceSala() const override;
+    void produceCafenea() const override;
+    Cladire* GetCladire();
+};
+
+class Director {
+    Builder* builder;
+public:
+    void set_builder(Builder* b);
+    void BuildCladireMica();
+    void BuildCladireMedie();
+    void BuildCladireMare();
+};
+
+
+
+
+
 void verifica_int(double i);
 
-template <class Balet*>
-class MyVector: private vector<Balet*> {
-    vector<Balet*> vct;
-    typedef vector <Balet*> v;
-public:
-    using v::vector;
-    using v::at;
-    using v::end;
-    using v::begin;
-    using v::clear;
-    using v::empty;
-    using v::operator[];
-    using v::insert;
-    void push_back(Balet* b) {
-        int c = 0;
-        for(auto it : vct)
-        {
-            if(b->get_nume().compare(it->get_nume()) <= 0) {
-                break;
-            }
-            c++;
+template <class T>
+void get_oferte(vector <Reprezentatie*> v) {
+    for (auto it: v) {
+        if(dynamic_cast<T*> (it->get_cat(1)) != nullptr) {
+            it->display_info_repr();
+            cout << endl;
+            cout << "Categoria 1 " << it->get_pret(1,0) << endl;
+            cout << "Categoria 2 " << it->get_pret(2,0) << endl;
+            cout << "Categoria 3 " << it->get_pret(3,0) << endl;
         }
-        vct.insert(vct.begin() + c, b);
-    };
-    void display();
-};
-kdgcjgs
+    }
+}
+
+#endif //TICKET_BOOKING_CLASSES_H

@@ -12,17 +12,75 @@ int main() {
     Piesa_teatru CursaDeSoareci("Cursa de Soareci", "Agatha Christie", "Erwin Simensohn", "-", "-", "Vlaicu Golgea", 2, 15, 0, 15 );
     Piesa_teatru RegeleMoare("Regele moare", "Eugene Ionesco", "Andrei si Andreea Grosu", "-", "-", "-", 1, 40);
     Piesa_teatru CraiiDeCurteaVeche("Craii de Curtea-Veche", "Mateiu Caragiale", "Dragos Galgotiu", "Dragos Galgotiu", "Lia Mantoc", "Dragos Galgotiu", 2, 15, 0, 10);
+    //EventManager pentru piese de teatru - clasa template specializata
+    cout << "Testare\n\n";
+    EventManager<Piesa_teatru*> p;
+    p.add_event(&CeiDrepti);
+    p.add_event(&TitanicVals);
+    cout << "EventManager cu piese de teatru\n";
+    p.display();
+    cout << endl;
+    p.info_by_name("Cei drepti");
+    cout << endl;
+    p.info_by_regie("Dan Tudor");
+    cout << endl;
+    p.del_event(&CeiDrepti);
+    p.display();
+    cout << endl;
     //balet
     Balet DonQuijote("Don Quijote", "Miguel de Cervantes", "Katerina Slavicka-Elslegrova", "Jaroslav Slavicky", "-", "-", 3, 30);
     Balet LaculLebedelor("Lacul Lebedelor", "Piotr Ilici Ceaikovski", "-", "Oleg Danovski", "Viorica Petrovici & Adrian Damian", "-", 3, 30);
-    MyVector v;
-    v.push_back(&LaculLebedelor);
-    v.push_back(&DonQuijote);
-    v.display();
+    //EventManager pentru balet - clasa template generala
+    cout << "EventManager cu balet\n";
+    EventManager<Balet> b;
+    b.add_event(&DonQuijote);
+    b.display();
+    cout << endl;
+    b.del_event(DonQuijote);
+    b.display();
+
     //sali
     Sala Mica("Sala Mica", "Bucuresti, Sector 1, Str. Mare, nr. 5", 20, 30, 40);
     Sala Amfiteatru("Sala Amfiteatru", "Bucuresti, Sector 1, Str. Mare, nr.6", 35, 45, 55);
     Sala Mare("Sala Mare", "Bucuresti, Sector 1, Str. Mare, nr.2", 40, 50, 60);
+    //EventManager pentru sali
+    cout << "EventManager cu sali\n";
+    EventManager<Sala> s;
+    s.add_event(&Mica);
+    s.add_event(&Amfiteatru);
+    s.add_event(&Mare);
+    s.display();
+
+    //Testare builder
+    cout << "\nTestare builder\n\n";
+    ConcreteBuilder* builder = new ConcreteBuilder();
+    Director* director= new Director();
+    director->set_builder(builder);
+    cout << "Construim o cladire mica:\n";
+    director->BuildCladireMica();
+
+    Cladire* c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    std::cout << "\nConstruim o cladire mare:\n";
+    director->BuildCladireMare();
+
+    c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    cout << "\nConstruim o cladire doar pentru vara cu gradina si cafenea:\n";
+    builder->set_denumire("Cladire personalizata");
+    builder->produceGradinaDeVara();
+    builder->produceCafenea();
+    c = builder->GetCladire();
+    c->display();
+    delete c;
+
+    delete builder;
+
+
     //reprezentatii
     int nr_repr = 7;
     Reprezentatie CD5Mai(&CeiDrepti, 19, 30, 5, 5, 2023, &Mare, 100, 80, 50, 0, 0);
@@ -33,15 +91,17 @@ int main() {
     Reprezentatie RM18Mai(&RegeleMoare, 19, 30, 18, 5, 2023, &Amfiteatru, 90, 80, 70, 0);
     Reprezentatie CCV12Mai(&CraiiDeCurteaVeche, 20, 0, 12, 5, 2023, &Mica, 50, 30, 20, 0);
     // amanam o reprezentatie cu oferta
+    cout << "\nTestare clase mostenire multipla\nAmanam o reprezentatie cu oferta\n";
     CD12Mai.get_cat(1)->display_start_date();
     CD12Mai.get_cat(1)->amana(20, 0, 13, 5, 2023);
-    CD12Mai.get_cat(1)->display_start_date();
     cout << endl;
+    CD12Mai.get_cat(1)->display_start_date();
+    cout << "\n\namanam o reprezentatie cu reducere de ultima zi\n";
     // amanam o reprezentatie cu reducere de ultima zi
     TV5Mai.get_cat(1)->display_start_date();
     TV5Mai.get_cat(1)->amana(19, 30, 8, 5, 2023);
     TV5Mai.get_cat(1)->display_start_date();
-    cout << endl;
+    cout << "\n\namanam o reprezentatie cu reducere dubla\n";
     // amanam o reprezentatie cu reducere dubla
     TV20Mai.get_cat(1)->display_start_date();
     TV20Mai.get_cat(1)->amana(20, 0, 25, 5, 2023);
@@ -56,17 +116,47 @@ int main() {
     lista_reprezentatii.add_repr(&CS12Mai);
     lista_reprezentatii.add_repr(&RM18Mai);
     lista_reprezentatii.add_repr(&CCV12Mai);
+
+
+    vector<Reprezentatie*> reprlist;
+    reprlist.push_back(&CD12Mai);
+    reprlist.push_back(&CD5Mai);
+    reprlist.push_back(&TV5Mai);
+    reprlist.push_back(&TV20Mai);
+    reprlist.push_back(&CS12Mai);
+    reprlist.push_back(&RM18Mai);
+    reprlist.push_back(&CCV12Mai);
+    cout << "\nOferte\n";
+    get_oferte<Oferta>(reprlist);
+
+
     //rezervari
-//    Rezervare r1(&CCV12Mai, 1, 7, 1);
-//    Rezervare r2(&RM18Mai, 2, 23, 0);
-//    Rezervare r3(&TV5Mai, 3, 15, 2);
+    Rezervare r1(&CCV12Mai, 1, 7, 1);
+    Rezervare r2(&RM18Mai, 2, 23, 0);
+    Rezervare r3(&TV5Mai, 3, 15, 2);
+    //istoric rezervari - clasa care mosteneste privat Rezervare
+    cout << "\nTestare IstoricRezervari - clasa care mosteneste privat Rezervare\n";
+    IstoricRezervari ir;
+    ir.add_rez(&r1);
+    //ir.display();
+    //cout << endl;
+    ir.add_rez(&r2);
+    //ir.display();
+    //cout << endl;
+    ir.add_rez(&r3);
+    ir.display();
+    cout << "\nafisarea rezervarilor pentru o data anume\n";
+    ir.get_by_date(Data(19, 30, 5, 5, 2023));
+    cout << "\nafisarea rezervarilor pentru o anumita piesa\n";
+    ir.get_by_piesa("Titanic Vals");
+
     RezList lista_rezervari;
 //    lista_rezervari.add_rez(&r1);
 //    lista_rezervari.add_rez(&r2);
 //    lista_rezervari.add_rez(&r3);
     //meniu
     cout << "\nCALENDAR\nInformatii despre numele_piesei, ora de incepere, sala in care se desfasoara, numarul de locuri disponibile,\n codul reprezentatiei\n\n";
-    cout << "OBS: Aplicatia ofera doar informatii despre sectiunea Balet. Pentru rezervari, va rugam sa mergeti la casa de bilete.";
+    cout << "OBS: Aplicatia ofera doar informatii despre sectiunea Balet. Pentru rezervari, va rugam sa mergeti la casa de bilete.\n";
     lista_reprezentatii.display_list();
     while (true) {
         Rezervare::initiere();
